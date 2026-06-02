@@ -850,7 +850,7 @@ body.light { --bg:#f0f4f0; --bg2:#ffffff; --surface:#ffffff; --surface2:#f5f9f5;
       </div>
       <div class="form-group">
         <label class="form-label">CNPJ</label>
-        <input class="form-input" id="ff-cnpj" placeholder="00.000.000/0001-00" maxlength="18" oninput="maskCNPJ(this)">
+        <input class="form-input" id="ff-cnpj" placeholder="00.000.000/0001-00" maxlength="18" oninput="maskCNPJ(this)"><button type="button" class="btn btn-secondary btn-sm" style="margin-top:6px" onclick="buscarCNPJFornecedor()">🔍 Buscar CNPJ</button>
       </div>
       <div class="form-group">
         <label class="form-label">Contato</label>
@@ -1224,7 +1224,7 @@ function navigate(panel){
   if(panel==='tabelas') renderTabelas();
 }
 
-function acaoPrincipal(){
+function buscarCNPJFornecedor(){var cnpj=document.getElementById('ff-cnpj').value.replace(/\D/g,'');if(cnpj.length!==14){alert('Digite um CNPJ válido com 14 dígitos.');return;}var hint=document.getElementById('ff-cnpj');hint.placeholder='Buscando...';fetch('https://brasilapi.com.br/api/cnpj/v1/'+cnpj).then(function(r){return r.json();}).then(function(d){if(d.razao_social){document.getElementById('ff-nome').value=d.razao_social||'';document.getElementById('ff-contato').value=d.nome_fantasia||'';document.getElementById('ff-email').value=d.email||'';document.getElementById('ff-tel').value=d.ddd_telefone_1||'';}else{alert('CNPJ não encontrado.');}hint.placeholder='00.000.000/0001-00';}).catch(function(){alert('Erro ao buscar CNPJ.');hint.placeholder='00.000.000/0001-00';});}function acaoPrincipal(){
   if(painelAtual==='catalogo'){
     var menu=document.createElement('div');
     menu.className='dropdown-menu';
