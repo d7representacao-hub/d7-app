@@ -2180,7 +2180,7 @@ function limparTodosDados(){
   ['d7_clientes','d7_fornecedores','d7_produtos','d7_pedidos','d7_funil','d7_agenda','d7_origens','d7_respostas','d7_historicos','d7_metas','d7_config','d7_feed'].forEach(function(k){localStorage.removeItem(k);});
   location.reload();
 }
-var gClient=null,gDriveFileId=null;
+var gClient=null,gDriveFileId=null,GDRIVE_CLIENT_ID_FIXO='283973846228-d25qk8gglbh8ckc5ba66oq6b592qss60.apps.googleusercontent.com';
 function iniciarGDrive(){
   var cfg=JSON.parse(localStorage.getItem(KEY_CFG)||'{}');
   var clientId=cfg.gdriveClientId;if(!clientId)return;
