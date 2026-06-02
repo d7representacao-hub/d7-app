@@ -2520,7 +2520,7 @@ navigate=function(panel){
   else if(panel==='config'){btn.style.display='none';carregarConfig();}
   else if(panel==='clientes'){btn.style.display='';btn.onclick=function(){abrirModalCliente();};}
   else if(panel==='pedidos'){btn.style.display='';btn.onclick=function(){abrirModalPedido();};}
-  else if(panel==='catalogo'){btn.textContent='+ Ações';btn.style.display='';btn.onclick=acaoPrincipal;}
+  else if(panel==='catalogo'){btn.textContent='+ Ações';btn.style.display='';btn.onclick=function(e){e.stopPropagation();acaoPrincipal();};}
   else{btn.style.display='';}
 };
 
