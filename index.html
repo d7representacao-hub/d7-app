@@ -1384,9 +1384,9 @@ WhatsApp: [Seu Telefone]</textarea>
     <div id="ver-pedido-content"></div>
     <div class="modal-footer">
       <button class="btn btn-outline" onclick="fecharModal('modal-ver-pedido')">Fechar</button>
-      <button class="btn" style="background:#25D366;color:#fff;" onclick="whatsAppPedido()">📲 WhatsApp</button>
-      <button class="btn btn-outline" onclick="emailPedido()">📧 Email</button>
-      <button class="btn btn-primary" onclick="imprimirPedido()">🖨️ Imprimir / PDF</button>
+      <button class="btn" style="background:#25D366;color:#fff;" onclick="compartilharWhatsApp(pedidoIdVer)">📲 WhatsApp</button>
+      <button class="btn btn-outline" onclick="compartilharEmail(pedidoIdVer)">📧 Email</button>
+      <button class="btn btn-primary" onclick="imprimirPedido(pedidoIdVer)">🖨️ Imprimir / PDF</button>
     </div>
   </div>
 </div>
@@ -1846,16 +1846,59 @@ function verPedido(id){
   if(!ped)return;
   var cli=clientes.find(function(c){return c.id===ped.clienteId;});
   var data=new Date(ped.criadoEm).toLocaleDateString('pt-BR');
-  var iHtml=ped.itens.map(function(it){return '<tr><td>'+esc(it.nome)+'</td><td style="text-align:center">'+it.qtd+' '+it.unidade+'</td><td style="text-align:right">'+fmtMoeda(it.preco)+'</td><td style="text-align:right;font-weight:600">'+fmtMoeda(it.total)+'</td></tr>';}).join('');
+  var validade=new Date(ped.criadoEm);validade.setDate(validade.getDate()+7);
+  var validadeStr=validade.toLocaleDateString('pt-BR');
+  var cfg=JSON.parse(localStorage.getItem('d7_cfg')||'{}');
+  var empresa=cfg.empresa||'D7 Representação Comercial';
+  var iHtml=ped.itens.map(function(it){
+    return '<tr><td style="padding:8px 10px;border-bottom:1px solid #eee;">'+esc(it.nome)+'</td>'
+      +'<td style="padding:8px 10px;border-bottom:1px solid #eee;text-align:center;">'+it.qtd+' '+esc(it.unidade||'un')+'</td>'
+      +'<td style="padding:8px 10px;border-bottom:1px solid #eee;text-align:right;">'+fmtMoeda(it.preco)+'</td>'
+      +'<td style="padding:8px 10px;border-bottom:1px solid #eee;text-align:right;font-weight:700;">'+fmtMoeda(it.total)+'</td></tr>';
+  }).join('');
+  var desconto=ped.desconto||0;
+  var freteTipo=ped.freteTipo||'cif';
+  var freteValor=ped.freteValor||0;
+  var freteLabel=freteTipo==='cif'?'CIF — Incluso':freteTipo==='fob'?'FOB — R$ '+fmtMoeda(freteValor):'Não informado';
+  var descarga=ped.descarga==='cliente'?'Pelo Cliente':ped.descarga==='representante'?'Pela Transportadora':'Não informado';
+  var prodVenc=ped.produtoVenc?new Date(ped.produtoVenc).toLocaleDateString('pt-BR'):'—';
+  var freteVenc=ped.freteVenc?new Date(ped.freteVenc).toLocaleDateString('pt-BR'):'—';
+
   document.getElementById('ver-pedido-content').innerHTML=
-    '<div style="margin-bottom:16px"><div style="font-size:16px;font-weight:700">Pedido #'+ped.numero+'</div>'
-    +'<div style="font-size:12px;color:var(--text2)">'+data+' — '+(cli?esc(cli.nome):'?')+'</div></div>'
-    +'<table style="width:100%;border-collapse:collapse;font-size:13px"><thead><tr style="background:var(--surface2)"><th style="padding:8px;text-align:left">Produto</th><th style="padding:8px;text-align:center">Qtd</th><th style="padding:8px;text-align:right">Preço</th><th style="padding:8px;text-align:right">Total</th></tr></thead><tbody>'+iHtml+'</tbody></table>'
-    +'<div style="text-align:right;margin-top:12px;font-size:15px;font-weight:700;color:var(--accent)">Total: '+fmtMoeda(ped.total)+'</div>'
-    +'<div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">'
-    +'<button class="btn btn-outline btn-sm" onclick="imprimirPedido(\''+id+'\')">🖨️ Imprimir / PDF</button>'
-    +'<button class="btn btn-outline btn-sm" onclick="compartilharWhatsApp(\''+id+'\')">📲 WhatsApp</button>'
-    +'<button class="btn btn-outline btn-sm" onclick="compartilharEmail(\''+id+'\')">📧 Email</button></div>';
+    '<div style="background:linear-gradient(135deg,#6d28d9,#7c3aed);color:#fff;padding:18px 20px;border-radius:10px 10px 0 0;margin:-1px -1px 0;">'
+    +'<div style="font-size:18px;font-weight:700;">'+esc(empresa)+'</div>'
+    +'<div style="font-size:12px;opacity:.8;margin-top:2px;">Pedido de Venda</div></div>'
+    +'<div style="padding:16px 20px;background:#f8f8fc;border:1px solid #e0e0f0;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;">'
+    +'<div><div style="font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.5px;">Pedido</div>'
+    +'<div style="font-size:20px;font-weight:800;color:#6d28d9;">#'+ped.numero+'</div>'
+    +'<div style="font-size:12px;color:#666;">Emitido em '+data+'</div>'
+    +'<div style="font-size:12px;color:#e07000;">Válido até '+validadeStr+'</div></div>'
+    +'<div style="text-align:right;">'
+    +'<div style="font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.5px;">Cliente</div>'
+    +'<div style="font-weight:700;color:#222;">'+(cli?esc(cli.nome):'—')+'</div>'
+    +(cli&&cli.cnpj?'<div style="font-size:12px;color:#666;">CNPJ: '+esc(cli.cnpj)+'</div>':'')
+    +(cli&&cli.cidade?'<div style="font-size:12px;color:#666;">'+esc(cli.cidade)+(cli.estado?' — '+esc(cli.estado):'')+'</div>':'')
+    +(cli&&cli.tel?'<div style="font-size:12px;color:#666;">📲 '+esc(cli.tel)+'</div>':'')
+    +'</div></div>'
+    +'<table style="width:100%;border-collapse:collapse;font-size:13px;margin-top:0;">'
+    +'<thead><tr style="background:#7c3aed;color:#fff;">'
+    +'<th style="padding:9px 10px;text-align:left;">Produto</th>'
+    +'<th style="padding:9px 10px;text-align:center;">Qtd</th>'
+    +'<th style="padding:9px 10px;text-align:right;">Preço Unit.</th>'
+    +'<th style="padding:9px 10px;text-align:right;">Total</th></tr></thead>'
+    +'<tbody>'+iHtml+'</tbody></table>'
+    +'<div style="padding:12px 16px;background:#f0eeff;border:1px solid #ddd8ff;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">'
+    +(desconto>0?'<span style="font-size:13px;color:#666;">Desconto: <b>'+desconto+'%</b></span>':'<span></span>')
+    +'<div style="font-size:20px;font-weight:800;color:#6d28d9;">Total: '+fmtMoeda(ped.total)+'</div></div>'
+    +'<div style="padding:12px 16px;background:#fff;border:1px solid #e0e0f0;border-top:none;display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;font-size:12px;">'
+    +'<div><div style="color:#888;margin-bottom:2px;">Frete</div><div style="font-weight:600;">'+freteLabel+'</div></div>'
+    +'<div><div style="color:#888;margin-bottom:2px;">Descarga</div><div style="font-weight:600;">'+descarga+'</div></div>'
+    +'<div><div style="color:#888;margin-bottom:2px;">Venc. Produto</div><div style="font-weight:600;">'+prodVenc+'</div></div>'
+    +(freteVenc!=='—'?'<div><div style="color:#888;margin-bottom:2px;">Venc. Frete</div><div style="font-weight:600;">'+freteVenc+'</div></div>':'')
+    +(ped.obs?'<div style="grid-column:1/-1;"><div style="color:#888;margin-bottom:2px;">Observações</div><div style="font-weight:600;">'+esc(ped.obs)+'</div></div>':'')
+    +'</div>'
+    +'<div style="padding:10px 16px;background:#f8f8fc;border:1px solid #e0e0f0;border-top:none;font-size:11px;color:#aaa;text-align:center;">'
+    +esc(empresa)+' • d7x.com.br • d7representacao@gmail.com</div>';
   document.getElementById('modal-ver-pedido').classList.add('open');
 }
 function editarPedido(id){abrirModalPedido(id);}
@@ -1864,18 +1907,134 @@ function deletarPedido(id){
   pedidos=pedidos.filter(function(p){return p.id!==id;});
   savePed();renderPedidos();renderDashboard();toast('Pedido excluído','success');
 }
-function imprimirPedido(id){window.print();}
-function compartilharWhatsApp(id){
-  var ped=pedidos.find(function(p){return p.id===id;});
+function imprimirPedido(id){
+  var ped=pedidos.find(function(p){return p.id===(id||pedidoIdVer);});
   if(!ped)return;
   var cli=clientes.find(function(c){return c.id===ped.clienteId;});
-  var txt='Pedido #'+ped.numero+'\nCliente: '+(cli?cli.nome:'?')+'\nTotal: '+fmtMoeda(ped.total);
-  window.open('https://wa.me/?text='+encodeURIComponent(txt),'_blank');
+  var data=new Date(ped.criadoEm).toLocaleDateString('pt-BR');
+  var validade=new Date(ped.criadoEm);validade.setDate(validade.getDate()+7);
+  var cfg=JSON.parse(localStorage.getItem('d7_cfg')||'{}');
+  var empresa=cfg.empresa||'D7 Representação Comercial';
+  var iHtml=ped.itens.map(function(it,i){
+    return '<tr style="background:'+(i%2===0?'#fff':'#f9f7ff')+'">'
+      +'<td style="padding:9px 12px;border-bottom:1px solid #ece8ff;">'+esc(it.nome)+'</td>'
+      +'<td style="padding:9px 12px;border-bottom:1px solid #ece8ff;text-align:center;">'+it.qtd+' '+esc(it.unidade||'un')+'</td>'
+      +'<td style="padding:9px 12px;border-bottom:1px solid #ece8ff;text-align:right;">'+fmtMoeda(it.preco)+'</td>'
+      +'<td style="padding:9px 12px;border-bottom:1px solid #ece8ff;text-align:right;font-weight:700;color:#6d28d9;">'+fmtMoeda(it.total)+'</td></tr>';
+  }).join('');
+  var desconto=ped.desconto||0;
+  var freteTipo=ped.freteTipo||'cif';
+  var freteValor=ped.freteValor||0;
+  var freteLabel=freteTipo==='cif'?'CIF — Frete Incluso':freteTipo==='fob'?'FOB — Cliente paga frete (R$ '+fmtMoeda(freteValor)+')':'Não informado';
+  var descarga=ped.descarga==='cliente'?'Pelo Cliente':ped.descarga==='representante'?'Pela Transportadora':'Não informado';
+  var prodVenc=ped.produtoVenc?new Date(ped.produtoVenc).toLocaleDateString('pt-BR'):'—';
+  var freteVenc=ped.freteVenc?new Date(ped.freteVenc).toLocaleDateString('pt-BR'):'—';
+  var htmlPdf='<!DOCTYPE html><html><head><meta charset="UTF-8">'
+    +'<title>Pedido #'+ped.numero+' — '+esc(empresa)+'</title>'
+    +'<style>*{box-sizing:border-box;margin:0;padding:0;}body{font-family:Arial,sans-serif;font-size:13px;color:#222;}'
+    +'.pg{max-width:750px;margin:0 auto;padding:30px;}'
+    +'.header{background:linear-gradient(135deg,#6d28d9,#7c3aed);color:#fff;padding:24px 28px;border-radius:10px 10px 0 0;display:flex;justify-content:space-between;align-items:center;}'
+    +'.header h1{font-size:22px;font-weight:800;}.header .sub{font-size:12px;opacity:.8;margin-top:3px;}'
+    +'.header .num{text-align:right;font-size:28px;font-weight:900;opacity:.9;}'
+    +'.info{display:flex;justify-content:space-between;padding:18px 28px;background:#f8f7ff;border:1px solid #e0d8ff;border-top:none;gap:20px;}'
+    +'.info-col{flex:1;}.info-label{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}'
+    +'.info-val{font-weight:700;font-size:14px;color:#333;}.info-sub{font-size:12px;color:#666;margin-top:2px;}'
+    +'table{width:100%;border-collapse:collapse;margin-top:0;}'
+    +'thead tr{background:#6d28d9;color:#fff;}thead th{padding:10px 12px;text-align:left;font-size:12px;letter-spacing:.3px;}'
+    +'thead th:not(:first-child){text-align:right;}'
+    +'tbody td{padding:9px 12px;border-bottom:1px solid #ece8ff;font-size:13px;}'
+    +'tbody td:not(:first-child){text-align:right;}'
+    +'.total-row{background:#6d28d9;color:#fff;padding:12px 28px;display:flex;justify-content:space-between;align-items:center;}'
+    +'.total-row .tl{font-size:14px;opacity:.9;}.total-row .tv{font-size:24px;font-weight:900;}'
+    +'.conds{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border:1px solid #e0d8ff;border-top:none;}'
+    +'.cond-item{padding:12px 16px;border-right:1px solid #e0d8ff;}.cond-item:last-child{border-right:none;}'
+    +'.cond-label{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;}'
+    +'.cond-val{font-weight:700;font-size:13px;}'
+    +'.obs{padding:12px 16px;background:#fffbf0;border:1px solid #ffe4a0;border-top:none;font-size:12px;}'
+    +'.footer{margin-top:20px;text-align:center;font-size:11px;color:#aaa;border-top:1px dashed #ddd;padding-top:12px;}'
+    +'.validity{font-size:12px;color:#e07000;font-weight:600;}'
+    +'@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}'
+    +'</style></head><body><div class="pg">'
+    +'<div class="header"><div><h1>'+esc(empresa)+'</h1><div class="sub">Pedido de Venda • '+data+'</div>'
+    +'<div class="sub validity" style="margin-top:4px;">Válido até: '+validade.toLocaleDateString("pt-BR")+'</div></div>'
+    +'<div class="num">#'+ped.numero+'</div></div>'
+    +'<div class="info"><div class="info-col"><div class="info-label">Cliente</div>'
+    +'<div class="info-val">'+(cli?esc(cli.nome):'—')+'</div>'
+    +(cli&&cli.cnpj?'<div class="info-sub">CNPJ: '+esc(cli.cnpj)+'</div>':'')
+    +(cli&&cli.cidade?'<div class="info-sub">'+esc(cli.cidade)+(cli.estado?' — '+esc(cli.estado):'')+'</div>':'')
+    +(cli&&cli.tel?'<div class="info-sub">📲 '+esc(cli.tel)+'</div>':'')
+    +'</div>'
+    +(cli&&cli.contato?'<div class="info-col"><div class="info-label">Contato</div><div class="info-val">'+esc(cli.contato)+'</div>'+(cli.email?'<div class="info-sub">'+esc(cli.email)+'</div>':'')+'</div>':'')
+    +'<div class="info-col" style="text-align:right;"><div class="info-label">Status</div>'
+    +'<div class="info-val" style="text-transform:capitalize;">'+esc(ped.status||'aberto')+'</div></div></div>'
+    +'<table><thead><tr><th>Produto</th><th style="text-align:center">Qtd</th><th>Preço Unit.</th><th>Total</th></tr></thead><tbody>'+iHtml+'</tbody></table>'
+    +'<div class="total-row">'+(desconto>0?'<span class="tl">Desconto aplicado: '+desconto+'%</span>':'<span></span>')+'<span class="tv">Total: '+fmtMoeda(ped.total)+'</span></div>'
+    +'<div class="conds">'
+    +'<div class="cond-item"><div class="cond-label">Frete</div><div class="cond-val">'+freteLabel+'</div></div>'
+    +'<div class="cond-item"><div class="cond-label">Descarga</div><div class="cond-val">'+descarga+'</div></div>'
+    +'<div class="cond-item"><div class="cond-label">Venc. Boleto Produto</div><div class="cond-val">'+prodVenc+'</div></div>'
+    +(freteVenc!=='—'?'<div class="cond-item"><div class="cond-label">Venc. Boleto Frete</div><div class="cond-val">'+freteVenc+'</div></div>':'')
+    +'</div>'
+    +(ped.obs?'<div class="obs"><b>Obs:</b> '+esc(ped.obs)+'</div>':'')
+    +'<div class="footer">'+esc(empresa)+' • www.d7x.com.br • d7representacao@gmail.com<br>'
+    +'Este documento não possui valor fiscal. Pedido gerado em '+data+'.</div>'
+    +'</div></body></html>';
+  var w=window.open('','_blank','width=800,height=900');
+  w.document.write(htmlPdf);w.document.close();
+  setTimeout(function(){w.print();},600);
+}
+function compartilharWhatsApp(id){
+  var ped=pedidos.find(function(p){return p.id===(id||pedidoIdVer);});
+  if(!ped)return;
+  var cli=clientes.find(function(c){return c.id===ped.clienteId;});
+  var cfg=JSON.parse(localStorage.getItem('d7_cfg')||'{}');
+  var empresa=cfg.empresa||'D7 Representação Comercial';
+  var data=new Date(ped.criadoEm).toLocaleDateString('pt-BR');
+  var validade=new Date(ped.criadoEm);validade.setDate(validade.getDate()+7);
+  var itensLinha=ped.itens.map(function(it){
+    return '▫ '+it.nome+' — '+it.qtd+' '+it.unidade+' × '+fmtMoeda(it.preco)+' = *'+fmtMoeda(it.total)+'*';
+  }).join('\n');
+  var freteTipo=ped.freteTipo||'cif';
+  var freteLabel=freteTipo==='cif'?'CIF (incluso)':freteTipo==='fob'?'FOB — R$ '+fmtMoeda(ped.freteValor||0):' Não informado';
+  var prodVenc=ped.produtoVenc?new Date(ped.produtoVenc).toLocaleDateString('pt-BR'):'—';
+  var txt='📋 *PEDIDO #'+ped.numero+' — '+empresa+'*\n'
+    +'📅 Data: '+data+' | Válido até: '+validade.toLocaleDateString('pt-BR')+'\n'
+    +'━━━━━━━━━━━━━━━━━━━━\n'
+    +'👤 *Cliente:* '+(cli?cli.nome:'—')+'\n'
+    +(cli&&cli.cidade?'📍 '+cli.cidade+(cli.estado?' — '+cli.estado:'')+'\n':'')
+    +'━━━━━━━━━━━━━━━━━━━━\n'
+    +'📦 *ITENS DO PEDIDO:*\n'
+    +itensLinha+'\n'
+    +'━━━━━━━━━━━━━━━━━━━━\n'
+    +(ped.desconto>0?'🏷️ Desconto: '+ped.desconto+'%\n':'')
+    +'💰 *TOTAL: '+fmtMoeda(ped.total)+'*\n'
+    +'━━━━━━━━━━━━━━━━━━━━\n'
+    +'🚚 Frete: '+freteLabel+'\n'
+    +'📋 Venc. Boleto: '+prodVenc+'\n'
+    +(ped.obs?'📝 Obs: '+ped.obs+'\n':'')
+    +'\n_Para confirmar, responda esta mensagem. Obrigado!_ 🤝';
+  var tel=cli&&cli.tel?cli.tel.replace(/\D/g,''):'';
+  var url=tel?'https://wa.me/55'+tel+'?text='+encodeURIComponent(txt):'https://wa.me/?text='+encodeURIComponent(txt);
+  window.open(url,'_blank');
 }
 function compartilharEmail(id){
-  var ped=pedidos.find(function(p){return p.id===id;});
+  var ped=pedidos.find(function(p){return p.id===(id||pedidoIdVer);});
   if(!ped)return;
-  window.open('mailto:?subject=Pedido%20%23'+ped.numero+'&body='+encodeURIComponent('Total: '+fmtMoeda(ped.total)),'_blank');
+  var cli=clientes.find(function(c){return c.id===ped.clienteId;});
+  var cfg=JSON.parse(localStorage.getItem('d7_cfg')||'{}');
+  var empresa=cfg.empresa||'D7 Representação Comercial';
+  var data=new Date(ped.criadoEm).toLocaleDateString('pt-BR');
+  var itensLinha=ped.itens.map(function(it){return it.nome+' — '+it.qtd+' '+it.unidade+' × '+fmtMoeda(it.preco)+' = '+fmtMoeda(it.total);}).join('\n');
+  var corpo=empresa+'\nPedido de Venda\n\n'
+    +'Pedido: #'+ped.numero+'\nData: '+data+'\nCliente: '+(cli?cli.nome:'—')+'\n\n'
+    +'ITENS:\n'+itensLinha+'\n\n'
+    +(ped.desconto>0?'Desconto: '+ped.desconto+'%\n':'')
+    +'TOTAL: '+fmtMoeda(ped.total)+'\n\n'
+    +'Frete: '+(ped.freteTipo==='cif'?'CIF (incluso)':ped.freteTipo==='fob'?'FOB':'—')+'\n'
+    +(ped.obs?'Obs: '+ped.obs+'\n':'')
+    +'\nwww.d7x.com.br';
+  var dest=cli&&cli.email?cli.email:'';
+  window.open('mailto:'+dest+'?subject=Pedido+%23'+ped.numero+'+%E2%80%94+'+encodeURIComponent(empresa)+'&body='+encodeURIComponent(corpo),'_blank');
 }
 
 // ── CLIENTES: CRUD ──
@@ -2598,257 +2757,4 @@ function processarCSV(input){
   var file=input.files[0];if(!file)return;
   var reader=new FileReader();
   reader.onload=function(e){
-    var lines=e.target.result.split('\n').filter(function(l){return l.trim();});
-    if(lines.length<2){toast('CSV vazio','error');return;}
-    var headers=lines[0].split(',').map(function(h){return h.trim().toLowerCase();});
-    var preview=lines.slice(1,6).map(function(line){
-      var vals=line.split(',');var obj={};
-      headers.forEach(function(h,i){obj[h]=(vals[i]||'').trim().replace(/^"|"$/g,'');});
-      return obj;
-    });
-    var html='<div style="font-size:12px;margin-bottom:10px">'+preview.length+' registros encontrados</div>';
-    html+='<table style="width:100%;font-size:12px;border-collapse:collapse"><tr>'+headers.map(function(h){return '<th style="padding:4px;background:var(--surface2)">'+h+'</th>';}).join('')+'</tr>';
-    preview.forEach(function(r){html+='<tr>'+headers.map(function(h){return '<td style="padding:4px;border-bottom:1px solid var(--border)">'+esc(r[h]||'')+'</td>';}).join('')+'</tr>';});
-    html+='</table>';
-    document.getElementById('csv-preview').innerHTML=html;
-    document.getElementById('csv-footer').style.display='';
-    document.getElementById('csv-file').dataset.content=e.target.result;
-  };
-  reader.readAsText(file);
-}
-function confirmarImportCSV(){
-  var content=document.getElementById('csv-file').dataset.content;
-  if(!content)return;
-  var lines=content.split('\n').filter(function(l){return l.trim();});
-  var headers=lines[0].split(',').map(function(h){return h.trim().toLowerCase();});
-  var novos=lines.slice(1).map(function(line){
-    var vals=line.split(',');var obj={id:uid()};
-    headers.forEach(function(h,i){obj[h]=(vals[i]||'').trim().replace(/^"|"$/g,'');});
-    obj.status=obj.status||'ativo';obj.criadoEm=new Date().toISOString();return obj;
-  });
-  clientes=clientes.concat(novos);saveC();
-  fecharModal('modal-import-csv');renderClientes();renderDashboard();
-  toast(novos.length+' clientes importados!','success');
-}
-function importarCSVClientes(){document.getElementById('modal-import-csv').classList.add('open');}
-function importarCSVFornecedores(){toast('Use CSV com colunas: nome,cnpj,contato,tel,email','info');}
-function importarCSVProdutos(){toast('Use CSV com colunas: nome,fornecedor,preco,custo,margem,categoria','info');}
-function baixarModeloFornecedor(){dlCSV([['nome','cnpj','contato','tel','email','obs']],'modelo-fornecedores');}
-function baixarModeloProduto(){dlCSV([['nome','fornecedor_nome','codigo','categoria','unidade','custo','preco','margem','ean','ncm']],'modelo-produtos');}
-// ── GOOGLE DRIVE BACKUP ──
-var GDRIVE_CLIENT_ID='283973846228-d25qk8gglbh8ckc5ba66oq6b592qss60.apps.googleusercontent.com';
-var GDRIVE_SCOPE='https://www.googleapis.com/auth/drive.file';
-var GDRIVE_FILE_NAME='d7hub-backup.json';
-var _gdriveToken=null;
-
-function gDriveAuth(callback){
-  var clientId=GDRIVE_CLIENT_ID;
-  var cfg=JSON.parse(localStorage.getItem('d7_cfg')||'{}');
-  if(cfg.gclient)clientId=cfg.gclient;
-  if(!clientId){toast('Client ID não configurado em ⚙️ Config IA','error');return;}
-  try{
-    var client=google.accounts.oauth2.initTokenClient({
-      client_id:clientId,
-      scope:GDRIVE_SCOPE,
-      callback:function(resp){
-        if(resp.error){toast('Erro de autenticação: '+resp.error,'error');return;}
-        _gdriveToken=resp.access_token;
-        callback(_gdriveToken);
-      }
-    });
-    client.requestAccessToken();
-  }catch(e){toast('Erro ao iniciar autenticação Google. Verifique o Client ID.','error');console.error(e);}
-}
-
-function gDriveSave(){
-  mostrarStatusAutoSave('salvando');
-  gDriveAuth(function(token){
-    var data={clientes:clientes,fornecedores:fornecedores,produtos:produtos,pedidos:pedidos,funil:funil,agenda:agenda,historico:getHistoricos(),tarefas:tarefasAuto,automacoes:automacoes,exportadoEm:new Date().toISOString(),versao:'D7HUB_6_2'};
-    var blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
-    // Verificar se já existe arquivo no Drive
-    fetch('https://www.googleapis.com/drive/v3/files?q=name%3D%22'+GDRIVE_FILE_NAME+'%22+and+trashed%3Dfalse&spaces=drive',{
-      headers:{Authorization:'Bearer '+token}
-    }).then(function(r){return r.json();}).then(function(list){
-      var fileId=list.files&&list.files.length?list.files[0].id:null;
-      var url=fileId
-        ?'https://www.googleapis.com/upload/drive/v3/files/'+fileId+'?uploadType=media'
-        :'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart';
-      if(fileId){
-        // Update existing
-        return fetch(url,{method:'PATCH',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:blob});
-      } else {
-        // Create new with metadata
-        var meta=new Blob([JSON.stringify({name:GDRIVE_FILE_NAME,mimeType:'application/json'})],{type:'application/json'});
-        var form=new FormData();form.append('metadata',meta);form.append('file',blob);
-        return fetch(url,{method:'POST',headers:{Authorization:'Bearer '+token},body:form});
-      }
-    }).then(function(r){
-      if(r.ok){toast('✅ Backup salvo no Google Drive!','success');mostrarStatusAutoSave('salvo');}
-      else{r.text().then(function(t){toast('Erro ao salvar: '+t,'error');mostrarStatusAutoSave('erro');});}
-    }).catch(function(e){toast('Erro de rede: '+e.message,'error');});
-  });
-}
-
-
-// ── AUTO-SAVE GOOGLE DRIVE ──
-var _autoSaveTimer=null;
-var _autoSaveInterval=30*60*1000; // 30 minutos
-var _pendingSave=false;
-
-function agendarAutoSave(){
-  _pendingSave=true;
-  if(_autoSaveTimer)clearTimeout(_autoSaveTimer);
-  _autoSaveTimer=setTimeout(function(){
-    if(_pendingSave&&_gdriveToken){
-      gDriveSave();
-      _pendingSave=false;
-    }
-  },3000); // salva 3 segundos após última alteração
-}
-
-function iniciarAutoSavePeriodico(){
-  setInterval(function(){
-    if(_gdriveToken){
-      gDriveSave();
-    }
-  },_autoSaveInterval);
-}
-
-function mostrarStatusAutoSave(status){
-  var el=document.getElementById('autosave-status');
-  if(!el)return;
-  var msgs={salvando:'⏳ Salvando no Drive...',salvo:'☁️ Salvo automaticamente — '+new Date().toLocaleTimeString('pt-BR'),erro:'⚠️ Falha no auto-save'};
-  el.textContent=msgs[status]||status;
-  el.style.color=status==='erro'?'var(--danger)':status==='salvando'?'var(--warning)':'var(--accent)';
-}
-
-function gDriveRestore(){
-  gDriveAuth(function(token){
-    fetch('https://www.googleapis.com/drive/v3/files?q=name%3D%22'+GDRIVE_FILE_NAME+'%22+and+trashed%3Dfalse&spaces=drive',{
-      headers:{Authorization:'Bearer '+token}
-    }).then(function(r){return r.json();}).then(function(list){
-      if(!list.files||!list.files.length){toast('Nenhum backup encontrado no Drive','error');return;}
-      var fileId=list.files[0].id;
-      return fetch('https://www.googleapis.com/drive/v3/files/'+fileId+'?alt=media',{headers:{Authorization:'Bearer '+token}});
-    }).then(function(r){return r.json();}).then(function(data){
-      if(data.clientes)clientes=data.clientes;
-      if(data.fornecedores)fornecedores=data.fornecedores;
-      if(data.produtos)produtos=data.produtos;
-      if(data.pedidos)pedidos=data.pedidos;
-      if(data.funil)funil=data.funil;
-      if(data.agenda)agenda=data.agenda;
-      if(data.historico)saveHistoricos(data.historico);
-      if(data.tarefas)tarefasAuto=data.tarefas;
-      if(data.automacoes)automacoes=data.automacoes;
-      saveC();saveF();saveP();savePed();saveFunil();saveAg();saveTarefasAuto();saveAutomacoes();
-      renderDashboard();
-      toast('✅ Backup restaurado do Google Drive!','success');
-    }).catch(function(e){toast('Erro ao restaurar: '+e.message,'error');});
-  });
-}
-
-// ── D7X AI ──
-var chatHistory=[];
-function enviarMsgAI(){
-  var input=document.getElementById('ai-input');
-  var msg=(input.value||'').trim();if(!msg)return;
-  input.value='';
-  addMsgAI('user',msg);
-  var cfg=JSON.parse(localStorage.getItem('d7_cfg')||'{}');
-  if(!cfg.worker){addMsgAI('ai','Configure a URL do Worker Cloudflare em ⚙️ Config IA para ativar o D7X.');return;}
-  addMsgAI('ai','...');
-  var ctx='Clientes: '+clientes.length+'. Pedidos abertos: '+pedidos.filter(function(p){return p.status==='aberto';}).length+'. Prospects no funil: '+funil.length+'.';
-  fetch(cfg.worker,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:[{role:'system',content:(cfg.prompt||'Você é D7X.')+'\n\nContexto: '+ctx},{role:'user',content:msg}]})})
-    .then(function(r){return r.json();})
-    .then(function(d){
-      var msgs=document.querySelectorAll('.ai-msg.ai');
-      msgs[msgs.length-1].textContent=d.result||d.response||d.text||JSON.stringify(d);
-    })
-    .catch(function(){
-      var msgs=document.querySelectorAll('.ai-msg.ai');
-      msgs[msgs.length-1].textContent='Erro ao conectar com o Worker. Verifique a URL.';
-    });
-}
-function addMsgAI(role,text){
-  var box=document.getElementById('ai-messages');
-  var div=document.createElement('div');
-  div.className='ai-msg '+role;
-  div.textContent=text;
-  box.appendChild(div);
-  box.scrollTop=box.scrollHeight;
-}
-function toggleAI(){
-  var panel=document.getElementById('ai-sidebar');
-  if(panel)panel.classList.toggle('open');
-}
-
-// ── RENDERIZAR METAS ──
-nRenderMetas(){
-  var metas=JSON.parse(localStorage.getItem('d7_metas')||'{}');
-  var el=document.getElementById('metas-dashboard');
-  if(!el)return;
-  var now=new Date();
-  function mesAtual(d){var dt=new Date(d||'');return dt.getMonth()===now.getMonth()&&dt.getFullYear()===now.getFullYear();}
-  var pedidosMes=pedidos.filter(function(p){return mesAtual(p.data||p.criadoEm);}).length;
-  var fatMes=pedidos.filter(function(p){return mesAtual(p.data||p.criadoEm);}).reduce(function(s,p){return s+(parseFloat(p.total||p.valor||0));},0);
-  var clientesMes=clientes.filter(function(c){return mesAtual(c.criadoEm);}).length;
-  function barra(atual,meta,label,cor){
-    if(!meta)return '';
-    var pct=Math.min(100,Math.round(atual/meta*100));
-    return '<div style="margin-bottom:10px;">'
-      +'<div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">'
-      +'<span>'+label+'</span><span style="color:var(--muted)">'+atual+' / '+meta+' ('+pct+'%)</span></div>'
-      +'<div style="background:var(--surface2);border-radius:4px;height:8px;">'
-      +'<div style="width:'+pct+'%;background:'+cor+';height:8px;border-radius:4px;"></div></div></div>';
-  }
-  var html=barra(pedidosMes,metas.pedidos||0,'Pedidos','var(--primary)')
-    +barra(fatMes,metas.faturamento||0,'Faturamento R$','var(--success)')
-    +barra(clientesMes,metas.clientes||0,'Novos Clientes','var(--warning)');
-  el.innerHTML=html||'<div style="font-size:12px;color:var(--muted)">Clique em configurar para definir metas do mes</div>';
-}
-function abrirModalMetas(){
-  var metas=JSON.parse(localStorage.getItem('d7_metas')||'{}');
-  document.getElementById('meta-pedidos').value=metas.pedidos||'';
-  document.getElementById('meta-faturamento').value=metas.faturamento||'';
-  document.getElementById('meta-clientes').value=metas.clientes||'';
-  document.getElementById('modal-metas').classList.add('open');
-}
-function salvarMetas(){
-  localStorage.setItem('d7_metas',JSON.stringify({
-    pedidos:parseInt(document.getElementById('meta-pedidos').value)||0,
-    faturamento:parseFloat(document.getElementById('meta-faturamento').value)||0,
-    clientes:parseInt(document.getElementById('meta-clientes').value)||0
-  }));
-  fecharModal('modal-metas');
-  renderMetas();
-  toast('Metas salvas!','success');
-}
-function tentarAutoLogin(){
-  var key=GDRIVE_CLIENT_ID;
-  var el=document.getElementById('gdrive-status');
-  if(key&&el){el.textContent='Google Drive pronto. Clique para salvar.';el.style.color='var(--accent)';}
-}
-function initApp(){
-  navigate('dashboard');
-  loadConfig();
-  renderDashboard();
-  renderClientes();
-  renderFornecedores();
-  renderCatalogo();
-  renderPedidos();
-  renderFunil();
-  renderAgenda();
-  renderOrigens();
-  if(typeof renderAutomacoes==='function')renderAutomacoes();
-  if(typeof renderTarefas==='function')renderTarefas();
-  if(typeof renderTimeline==='function')renderTimeline();
-  atualizarMetaDistribuidores();
-  atualizarStatusBrevo();
-}
-document.addEventListener('DOMContentLoaded',initApp);
-document.addEventListener('DOMContentLoaded',function(){setTimeout(tentarAutoLogin,2000);});
-document.addEventListener('DOMContentLoaded',function(){setTimeout(iniciarAutoSavePeriodico,5000);});
-
-</script>
-</body>
-</html>
+    var lines=e.target.result.split('\n')
