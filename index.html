@@ -1564,6 +1564,61 @@ function saveP(){localStorage.setItem(KEY_P,JSON.stringify(produtos));}
 function savePed(){localStorage.setItem(KEY_PED,JSON.stringify(pedidos));}
 
 // ── NAVEGAÇÃO ──
+// ── UTILS ──
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
+function esc(s){return (s||'').toString().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function fmtMoeda(n){return 'R$ '+(parseFloat(n)||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function fmtNum(n){return (parseFloat(n)||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function toast(msg,type){
+  type=type||'success';
+  var c=document.getElementById('toast-container');
+  var d=document.createElement('div');
+  d.className='toast toast-'+type;d.textContent=msg;
+  c.appendChild(d);setTimeout(function(){d.remove();},3200);
+}
+function fecharModal(id){document.getElementById(id).classList.remove('open');}
+function maskTel(input){
+  var v=input.value.replace(/\D/g,'').slice(0,11);
+  if(v.length>10)v=v.replace(/^(\d{2})(\d{5})(\d{4}).*/,'($1) $2-$3');
+  else if(v.length>6)v=v.replace(/^(\d{2})(\d{4})(\d*)/,'($1) $2-$3');
+  else if(v.length>2)v=v.replace(/^(\d{2})(\d*)/,'($1) $2');
+  input.value=v;
+}
+function dlCSV(rows,filename){
+  var content=rows.map(function(r){return r.map(function(c){return '"'+(c||'').toString().replace(/"/g,'""')+'"';}).join(',');}).join('\n');
+  var blob=new Blob(['\ufeff'+content],{type:'text/csv;charset=utf-8;'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=(filename||'export')+'.csv';a.click();
+}
+function dlJSON(data,filename){
+  var blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=(filename||'export')+'.json';a.click();
+}
+function renderFeed(){
+  var el=document.getElementById('feed-atividade');
+  if(!el)return;
+  var items=pedidos.slice(-5).reverse().map(function(p){
+    var cli=clientes.find(function(c){return c.id===p.clienteId;});
+    return '<div style="padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;">📦 Pedido #'+p.numero+' — '+(cli?esc(cli.nome):'?')+' — '+fmtMoeda(p.total)+'</div>';
+  });
+  el.innerHTML=items.join('')||'<div style="color:var(--muted);font-size:13px;padding:8px 0;">Nenhuma atividade recente</div>';
+}
+function renderFornecedores(){
+  var tbody=document.getElementById('fornecedores-tbody');
+  if(!tbody)return;
+  tbody.innerHTML=fornecedores.map(function(f){
+    return '<tr><td>'+esc(f.nome)+'</td><td>'+esc(f.cnpj||'')+'</td><td>'+esc(f.contato||'')+'</td><td>'+esc(f.tel||'')+'</td>'
+      +'<td><button class="btn btn-sm btn-outline" onclick="abrirModalFornecedor(\''+f.id+'\')" style="margin-right:4px">✏️</button>'
+      +'<button class="btn btn-sm btn-danger" onclick="excluirFornecedor(\''+f.id+'\')" style="background:var(--danger)">🗑️</button></td></tr>';
+  }).join('')||'<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--muted)">Nenhum fornecedor cadastrado</td></tr>';
+}
+function renderAgenda(){
+  var tbody=document.getElementById('agenda-tbody');
+  if(!tbody)return;
+  tbody.innerHTML=agenda.slice(0,50).map(function(a){
+    return '<tr><td>'+esc(a.titulo||'')+'</td><td>'+esc(a.data||'')+'</td><td>'+esc(a.hora||'')+'</td><td>'+esc(a.tipo||'')+'</td>'
+      +'<td><button class="btn btn-sm btn-danger" onclick="excluirAgenda(\''+a.id+'\')" style="background:var(--danger)">🗑️</button></td></tr>';
+  }).join('')||'<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--muted)">Nenhum agendamento</td></tr>';
+}
 function navigate(panel){
   painelAtual=panel;
   document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active');});
