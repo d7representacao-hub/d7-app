@@ -1603,6 +1603,7 @@ function renderFeed(){
   el.innerHTML=items.join('')||'<div style="color:var(--muted);font-size:13px;padding:8px 0;">Nenhuma atividade recente</div>';
 }
 function renderFornecedores(){
+  if(!document.getElementById('fornecedores-tbody'))return;
   var tbody=document.getElementById('fornecedores-tbody');
   if(!tbody)return;
   tbody.innerHTML=fornecedores.map(function(f){
@@ -1612,6 +1613,7 @@ function renderFornecedores(){
   }).join('')||'<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--muted)">Nenhum fornecedor cadastrado</td></tr>';
 }
 function renderAgenda(){
+  if(!document.getElementById('agenda-tbody'))return;
   var tbody=document.getElementById('agenda-tbody');
   if(!tbody)return;
   tbody.innerHTML=agenda.slice(0,50).map(function(a){
@@ -2269,6 +2271,7 @@ function deletarFunil(id){
 
 // ── CATÁLOGO ──
 function renderCatalogo(){
+  if(!document.getElementById('catalogo-tbody'))return;
   var q=((document.getElementById('search-catalogo')||{value:''}).value||'').toLowerCase();
   var forn=(document.getElementById('filter-forn-catalogo')||{value:''}).value;
   var el=document.getElementById('sel-forn-pedido');// populate for tabelas
