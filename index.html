@@ -1252,7 +1252,7 @@ input:checked+.toggle-slider:before{transform:translateX(18px);}
       </div>
       <div class="card" style="margin:0;padding:14px;">
         <div style="font-size:13px;font-weight:600;margin-bottom:6px;">☁️ Google Drive</div>
-        <div id="gdrive-status" style="font-size:12px;color:var(--muted);margin-bottom:8px;">Configure o Client ID em ⚙️ Config IA para ativar.</div>
+        <div id="gdrive-status" style="font-size:12px;color:var(--accent);margin-bottom:8px;">✅ Google Drive pronto. Clique para salvar.</div>
         <button class="btn btn-primary" style="width:100%;margin-bottom:8px;" onclick="gDriveSave()" id="btn-gdrive-save">☁️ Salvar no Drive</button>
         <button class="btn btn-outline" style="width:100%;" onclick="gDriveRestore()" id="btn-gdrive-load">☁️ Restaurar do Drive</button>
       </div>
@@ -2234,8 +2234,8 @@ function gDriveSave(){
         return fetch(url,{method:'POST',headers:{Authorization:'Bearer '+token},body:form});
       }
     }).then(function(r){
-      if(r.ok){toast('✅ Backup salvo no Google Drive!','success');mostrarStatusAutoSave('salvo');}else{
-      else{r.text().then(function(t){toast('Erro ao salvar: '+t,'error');mostrarStatusAutoSave('erro');});}}
+      if(r.ok){toast('✅ Backup salvo no Google Drive!','success');mostrarStatusAutoSave('salvo');}
+      else{r.text().then(function(t){toast('Erro ao salvar: '+t,'error');mostrarStatusAutoSave('erro');});}
     }).catch(function(e){toast('Erro de rede: '+e.message,'error');});
   });
 }
@@ -2822,3 +2822,4 @@ document.addEventListener('DOMContentLoaded',function(){setTimeout(iniciarAutoSa
 </script>
 </body>
 </html>
+               
