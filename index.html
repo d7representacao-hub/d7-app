@@ -1182,9 +1182,13 @@ WhatsApp: [Seu Telefone]</textarea>
         <label class="form-label">Nome do Fornecedor *</label>
         <input class="form-input" id="ff-nome" placeholder="Nome da empresa fornecedora">
       </div>
-      <div class="form-group">
+      <div class="form-group full">
         <label class="form-label">CNPJ</label>
-        <input class="form-input" id="ff-cnpj" placeholder="00.000.000/0001-00" maxlength="18" oninput="maskCNPJ(this)">
+        <div class="input-group">
+          <input class="form-input" id="ff-cnpj" placeholder="00.000.000/0001-00" maxlength="18" oninput="maskCNPJ(this)">
+          <button class="btn btn-primary" onclick="buscarCNPJFornecedor()">🔍 Buscar</button>
+        </div>
+        <span class="form-hint" id="ff-cnpj-hint">Digite o CNPJ e clique em Buscar</span>
       </div>
       <div class="form-group">
         <label class="form-label">Contato</label>
@@ -1650,6 +1654,22 @@ function maskCNPJ(input){
   else if(v.length>5)v=v.replace(/^(\d{2})(\d{3})(\d*)$/,'$1.$2.$3');
   else if(v.length>2)v=v.replace(/^(\d{2})(\d*)$/,'$1.$2');
   input.value=v;
+}
+function buscarCNPJFornecedor(){
+  var cnpj=document.getElementById('ff-cnpj').value.replace(/\D/g,'');
+  if(cnpj.length!==14){toast('Digite um CNPJ válido (14 dígitos)','error');return;}
+  var hint=document.getElementById('ff-cnpj-hint');
+  if(hint)hint.textContent='Buscando...';
+  fetch('https://brasilapi.com.br/api/cnpj/v1/'+cnpj)
+    .then(function(r){return r.json();})
+    .then(function(d){
+      if(d.status===400||d.message){if(hint)hint.textContent='CNPJ não encontrado';return;}
+      document.getElementById('ff-nome').value=d.razao_social||'';
+      document.getElementById('ff-tel').value=d.ddd_telefone_1||'';
+      document.getElementById('ff-email').value=d.email||'';
+      if(hint)hint.textContent='Dados preenchidos via Receita Federal';
+    })
+    .catch(function(){if(hint)hint.textContent='Erro ao buscar CNPJ. Tente novamente.';});
 }
 function buscarCNPJ(){
   var cnpj=document.getElementById('f-cnpj').value.replace(/\D/g,'');
