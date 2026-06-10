@@ -1596,6 +1596,16 @@ function savePed(){localStorage.setItem(KEY_PED,JSON.stringify(pedidos));}
 // ── NAVEGAÇÃO ──
 // ── UTILS ──
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
+var _autoSaveTimer=null;
+function agendarAutoSave(){
+  clearTimeout(_autoSaveTimer);
+  var el=document.getElementById('autosave-status');
+  if(el)el.textContent='salvando...';
+  _autoSaveTimer=setTimeout(function(){
+    if(el)el.textContent='✓ salvo';
+    setTimeout(function(){if(el)el.textContent='';},2000);
+  },1000);
+}
 var KEY_HIST='d7_historico';
 var _historico=JSON.parse(localStorage.getItem(KEY_HIST)||'[]');
 function logEvento(entidadeId,tipo,descricao,extras){
