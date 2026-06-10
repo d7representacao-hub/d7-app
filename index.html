@@ -1359,6 +1359,18 @@ WhatsApp: [Seu Telefone]</textarea>
         <input class="form-input" id="fp-produto-venc" type="date">
       </div>
     </div>
+      <div class="form-group">
+        <label class="form-label">Prazo Entrega (dias)</label>
+        <input class="form-input" id="fp-prazo-entrega" type="number" min="0" placeholder="ex: 15">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Peso Total (kg)</label>
+        <input class="form-input" id="fp-peso-pedido" type="number" step="0.01" placeholder="ex: 1500">
+      </div>
+      <div class="form-group full">
+        <label class="form-label">Prazos Pgto</label>
+        <input class="form-input" id="fp-prazos-pgto" type="text" placeholder="ex: P1-30D / P2-45D / P3-60D">
+      </div>
 
     <div style="margin-bottom:10px;">
       <div style="font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px;">Adicionar Produto</div>
@@ -1805,6 +1817,9 @@ function abrirModalPedido(id){
     document.getElementById('fp-frete-valor').value=ped.freteValor||'';
     document.getElementById('fp-frete-venc').value=ped.freteVenc||'';
     document.getElementById('fp-produto-venc').value=ped.produtoVenc||'';
+    document.getElementById('fp-prazo-entrega').value=ped.prazoEntrega||'';
+    document.getElementById('fp-peso-pedido').value=ped.pesoPedido||'';
+    document.getElementById('fp-prazos-pgto').value=ped.prazosPgto||'';
     itensPedido=JSON.parse(JSON.stringify(ped.itens||[]));
   } else {
     document.getElementById('fp-status-pedido').value='aberto';
@@ -1815,6 +1830,9 @@ function abrirModalPedido(id){
     document.getElementById('fp-frete-valor').value='';
     document.getElementById('fp-frete-venc').value='';
     document.getElementById('fp-produto-venc').value='';
+    document.getElementById('fp-prazo-entrega').value='';
+    document.getElementById('fp-peso-pedido').value='';
+    document.getElementById('fp-prazos-pgto').value='';
   }
   renderItensPedido();
   document.getElementById('modal-pedido').classList.add('open');
@@ -1906,6 +1924,9 @@ function salvarPedido(){
     freteValor:parseFloat(document.getElementById('fp-frete-valor').value)||0,
     freteVenc:document.getElementById('fp-frete-venc').value,
     produtoVenc:document.getElementById('fp-produto-venc').value,
+    prazoEntrega:document.getElementById('fp-prazo-entrega').value||'',
+    pesoPedido:document.getElementById('fp-peso-pedido').value||'',
+    prazosPgto:document.getElementById('fp-prazos-pgto').value||'',
     itens:JSON.parse(JSON.stringify(itensPedido)),total:total,
     criadoEm:pedOrig?pedOrig.criadoEm:new Date().toISOString()
   };
@@ -1992,6 +2013,9 @@ function imprimirPedido(id){
   var freteValor=parseFloat(ped.freteValor||0);
   var prodVenc=ped.produtoVenc||'—';
   var freteVenc=ped.freteVenc||'—';
+  var prazoEntrega=ped.prazoEntrega||'';
+  var pesoPedido=ped.pesoPedido||'';
+  var prazosPgto=ped.prazosPgto||'';
   var desconto=parseFloat(ped.desconto||0);
   var freteLabel=freteTipo==='cif'?'CIF — Frete Incluso':freteTipo==='fob'?'FOB — Cliente paga frete (R$ '+fmtNum(freteValor)+')':'Sem frete';
   var descarga=ped.descarga==='cliente'?'Pelo Cliente':ped.descarga==='representante'?'Pela Transportadora':'Não informado';
@@ -2093,6 +2117,9 @@ function imprimirPedido(id){
     +'<div class="cond-item"><div class="cond-label">Descarga</div><div class="cond-val">'+descarga+'</div></div>'
     +'<div class="cond-item"><div class="cond-label">Venc. Produto</div><div class="cond-val">'+prodVenc+'</div></div>'
     +(freteVenc!=='—'?'<div class="cond-item"><div class="cond-label">Venc. Frete</div><div class="cond-val">'+freteVenc+'</div></div>':'')
+    +(prazoEntrega?'<div class="cond-item"><div class="cond-label">Prazo Entrega</div><div class="cond-val">'+prazoEntrega+' dias</div></div>':'')
+    +(pesoPedido?'<div class="cond-item"><div class="cond-label">Peso Total</div><div class="cond-val">'+pesoPedido+' kg</div></div>':'')
+    +(prazosPgto?'<div class="cond-item cond-full"><div class="cond-label">Prazos Pgto</div><div class="cond-val">'+prazosPgto+'</div></div>':'')
     +'</div>'
     +(ped.obs?'<div class="obs"><b>Obs:</b> '+esc(ped.obs)+'</div>':'')
     /* ASSINATURAS */
