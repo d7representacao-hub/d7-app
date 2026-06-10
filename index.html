@@ -2058,13 +2058,13 @@ function imprimirPedido(id){
     +'</tr></thead><tbody>';
   (ped.itens||[]).forEach(function(item){
     htmlPdf+='<tr>'
-      +'<td>'+(item.codigo||'-')+'</td>'
-      +'<td>'+(item.ean||'—')+'</td>'
-      +'<td><strong>'+(item.nome||'')+'</strong>'+(item.fornecedor?'<br><small style="color:#555">'+item.fornecedor+'</small>':'')+'</td>'
+      +'<td>-</td>'
+      +'<td>—</td>'
+      +'<td><strong>'+(item.nome||'')+'</strong></td>'
       +'<td style="text-align:center">'+(item.unidade||'UN')+'</td>'
-      +'<td style="text-align:center">'+(item.quantidade||0)+'</td>'
-      +'<td style="text-align:right">'+fmtMoeda(item.precoUnitario)+'</td>'
-      +'<td style="text-align:right"><strong>'+fmtMoeda((item.quantidade||0)*(item.precoUnitario||0))+'</strong></td>'
+      +'<td style="text-align:center">'+(item.qtd||0)+'</td>'
+      +'<td style="text-align:right">'+fmtMoeda(item.preco)+'</td>'
+      +'<td style="text-align:right"><strong>'+fmtMoeda(item.total)+'</strong></td>'
       +'</tr>';
   });
   htmlPdf+='</tbody><tfoot><tr class="tr-tot">'
@@ -2072,7 +2072,7 @@ function imprimirPedido(id){
     +'<td style="text-align:right">'+fmtMoeda(ped.total)+'</td>'
     +'</tr></tfoot></table>'
     +'<div class="conds">'
-    +'<div class="ci"><div class="cl">Frete</div><div class="cv">'+(ped.freteTipo==='CIF'?'CIF — Frete incluso':ped.freteTipo==='FOB'?'FOB — Por conta do cliente':'Não informado')+'</div></div>'
+    +'<div class="ci"><div class="cl">Frete</div><div class="cv">'+((ped.freteTipo||'').toUpperCase()==='CIF'?'CIF — Frete incluso':(ped.freteTipo||'').toUpperCase()==='FOB'?'FOB — Por conta do cliente':'Não informado')+'</div></div>'
     +'<div class="ci"><div class="cl">Descarga</div><div class="cv">'+(ped.descarga||'Não informado')+'</div></div>'
     +'<div class="ci"><div class="cl">Venc. Produto</div><div class="cv">'+(ped.produtoVenc||'—')+'</div></div>'
     +(ped.freteVenc?'<div class="ci"><div class="cl">Venc. Frete</div><div class="cv">'+ped.freteVenc+'</div></div>':'')
