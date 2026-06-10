@@ -2211,7 +2211,6 @@ function imprimirPedido(id){
     +(ped.prazoEntrega?'<div style="border-left:3px solid #000;padding:3px 12px 3px 8px;margin-right:16px;margin-bottom:6px;"><div style="font-size:9px;text-transform:uppercase;color:#555;">Prazo Entrega</div><div style="font-size:11px;font-weight:bold;">'+ped.prazoEntrega+'</div></div>':'')
     +(ped.pesoPedido?'<div style="border-left:3px solid #000;padding:3px 12px 3px 8px;margin-right:16px;margin-bottom:6px;"><div style="font-size:9px;text-transform:uppercase;color:#555;">Peso Total</div><div style="font-size:11px;font-weight:bold;">'+ped.pesoPedido+' kg</div></div>':'')
     +'</div>'
-    +(ped.obs?'<div style="margin-bottom:10px;font-size:10px;"><strong>Obs:</strong> '+ped.obs+'</div>':'')
     +'<table style="width:100%;border-collapse:collapse;font-size:10px;margin-top:8px;">'
     +'<thead></thead><tbody>'
     +'<tr style="border-bottom:none;">'
@@ -2228,10 +2227,9 @@ function imprimirPedido(id){
     +'<td style="padding:4px 0;border-bottom:none;" colspan="2"><strong>P3</strong> '+(ped.pf3||'___________')+'</td>'
     +'</tr>'
     +'</tbody></table>'
-    +'<div style="display:flex;justify-content:flex-end;margin-top:20px;">'
-    +'<div style="text-align:center;width:220px;">'
-    +'<div style="border-top:1px solid #000;padding-top:4px;font-size:9px;text-transform:uppercase;letter-spacing:.5px;">Assinatura do Comprador</div>'
-    +'</div>'
+    +'<div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:16px;">'
+    +(ped.obs?'<div style="font-size:10px;"><strong>Obs:</strong> '+ped.obs+'</div>':'<div></div>')
+    +'<div style="font-size:9px;text-transform:uppercase;letter-spacing:.5px;">Assinatura do Comprador</div>'
     +'</div>'
     +'</body></html>';
   var w=window.open('','_blank','width=800');
