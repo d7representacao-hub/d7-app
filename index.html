@@ -2211,16 +2211,17 @@ function imprimirPedido(id){
     +(ped.prazoEntrega?'<div style="padding:3px 12px 3px 0;margin-right:4px;margin-bottom:4px;"><div style="font-size:9px;text-transform:uppercase;color:#555;">Prazo Entrega</div><div style="font-size:11px;font-weight:bold;">'+ped.prazoEntrega+'</div></div>':'')
     +(ped.pesoPedido?'<div style="padding:3px 12px 3px 0;margin-right:4px;margin-bottom:4px;"><div style="font-size:9px;text-transform:uppercase;color:#555;">Peso Total</div><div style="font-size:11px;font-weight:bold;">'+ped.pesoPedido+' kg</div></div>':'')
     +'<div style="width:1px;background:#ccc;margin:0 10px 4px 6px;align-self:stretch;"></div>'
+    +'<div style="padding:3px 12px 3px 0;margin-right:4px;margin-bottom:4px;"><div style="font-size:9px;text-transform:uppercase;color:#555;">Pgto Frete</div><div style="font-size:11px;font-weight:bold;">&nbsp;</div></div>'
+    +(ped.pf1?'<div style="padding:3px 12px 3px 0;margin-right:4px;margin-bottom:4px;"><div style="font-size:9px;text-transform:uppercase;color:#555;">P1</div><div style="font-size:11px;font-weight:bold;">'+ped.pf1+'</div></div>':'')
+    +(ped.pf2?'<div style="padding:3px 12px 3px 0;margin-right:4px;margin-bottom:4px;"><div style="font-size:9px;text-transform:uppercase;color:#555;">P2</div><div style="font-size:11px;font-weight:bold;">'+ped.pf2+'</div></div>':'')
+    +(ped.pf3?'<div style="padding:3px 12px 3px 0;margin-right:4px;margin-bottom:4px;"><div style="font-size:9px;text-transform:uppercase;color:#555;">P3</div><div style="font-size:11px;font-weight:bold;">'+ped.pf3+'</div></div>':'')
+    
+    +'<div style="width:1px;background:#ccc;margin:0 10px 4px 6px;align-self:stretch;"></div>'
     +'<div style="padding:3px 12px 3px 0;margin-right:4px;margin-bottom:4px;"><div style="font-size:9px;text-transform:uppercase;color:#555;">Pgto Produto</div><div style="font-size:11px;font-weight:bold;">&nbsp;</div></div>'
     +(ped.pp1?'<div style="padding:3px 12px 3px 0;margin-right:4px;margin-bottom:4px;"><div style="font-size:9px;text-transform:uppercase;color:#555;">P1</div><div style="font-size:11px;font-weight:bold;">'+ped.pp1+'</div></div>':'')
     +(ped.pp2?'<div style="padding:3px 12px 3px 0;margin-right:4px;margin-bottom:4px;"><div style="font-size:9px;text-transform:uppercase;color:#555;">P2</div><div style="font-size:11px;font-weight:bold;">'+ped.pp2+'</div></div>':'')
     +(ped.pp3?'<div style="padding:3px 12px 3px 0;margin-right:4px;margin-bottom:4px;"><div style="font-size:9px;text-transform:uppercase;color:#555;">P3</div><div style="font-size:11px;font-weight:bold;">'+ped.pp3+'</div></div>':'')
     +(ped.pp4?'<div style="padding:3px 12px 3px 0;margin-right:4px;margin-bottom:4px;"><div style="font-size:9px;text-transform:uppercase;color:#555;">P4</div><div style="font-size:11px;font-weight:bold;">'+ped.pp4+'</div></div>':'')
-    +'<div style="width:1px;background:#ccc;margin:0 10px 4px 6px;align-self:stretch;"></div>'
-    +'<div style="padding:3px 12px 3px 0;margin-right:4px;margin-bottom:4px;"><div style="font-size:9px;text-transform:uppercase;color:#555;">Pgto Frete</div><div style="font-size:11px;font-weight:bold;">&nbsp;</div></div>'
-    +(ped.pf1?'<div style="padding:3px 12px 3px 0;margin-right:4px;margin-bottom:4px;"><div style="font-size:9px;text-transform:uppercase;color:#555;">P1</div><div style="font-size:11px;font-weight:bold;">'+ped.pf1+'</div></div>':'')
-    +(ped.pf2?'<div style="padding:3px 12px 3px 0;margin-right:4px;margin-bottom:4px;"><div style="font-size:9px;text-transform:uppercase;color:#555;">P2</div><div style="font-size:11px;font-weight:bold;">'+ped.pf2+'</div></div>':'')
-    +(ped.pf3?'<div style="padding:3px 12px 3px 0;margin-right:4px;margin-bottom:4px;"><div style="font-size:9px;text-transform:uppercase;color:#555;">P3</div><div style="font-size:11px;font-weight:bold;">'+ped.pf3+'</div></div>':'')
     +'</div>'
     +'<div style="margin-top:auto;display:flex;justify-content:space-between;align-items:flex-end;padding-top:8px;">'
     +(ped.obs?'<div style="font-size:10px;"><strong>Obs:</strong> '+ped.obs+'</div>':'<div></div>')
