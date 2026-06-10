@@ -1107,7 +1107,7 @@ WhatsApp: [Seu Telefone]</textarea>
       </div>
       <div class="form-group">
         <label class="form-label">Ramo / Segmento</label>
-        <input class="form-input" id="f-ramo" placeholder="ex: Atacado, Varejo">
+        <input class="form-input" id="f-segmento" placeholder="ex: Atacado, Varejo">
       </div>
       <div class="form-group">
         <label class="form-label">CEP</label>
@@ -2043,47 +2043,34 @@ function imprimirPedido(id){
   var cli=clientes.find(function(c){return c.id===ped.clienteId;});
   var data=ped.criadoEm?new Date(ped.criadoEm).toLocaleDateString('pt-BR'):new Date().toLocaleDateString('pt-BR');
   var fmtMoeda=function(v){return'R$ '+parseFloat(v||0).toFixed(2).replace('.',',');};
-  var freteLbl=(ped.freteTipo||'').toUpperCase()==='CIF'?'CIF — Frete Incluso':(ped.freteTipo||'').toUpperCase()==='FOB'?'FOB — Por conta do Cliente':'Não informado';
+  var freteLbl=(ped.freteTipo||'').toUpperCase()==='CIF'?'CIF — Frete incluso':(ped.freteTipo||'').toUpperCase()==='FOB'?'FOB — Por conta do Cliente':'Não informado';
   var descargaLbl=ped.descarga&&ped.descarga!=='nao_informado'?ped.descarga:'Não informado';
   var css='*{margin:0;padding:0;box-sizing:border-box;}'
-    +'body{font-family:Arial,sans-serif;font-size:11px;color:#000;background:#fff;}'
-    +'@page{margin:10mm;size:A4 landscape;}'+'html,body{height:auto!important;}'
-    +'.hdr{display:flex;align-items:flex-start;justify-content:space-between;padding-bottom:8px;margin-bottom:6px;}'
-    +'.hdr-left{display:flex;align-items:flex-start;gap:12px;}'
-    +'.logo-box{width:48px;min-width:48px;height:48px;}'
-    +'.logo{width:48px;height:48px;object-fit:contain;border-radius:4px;}'
-    +'.co-name{font-size:13px;font-weight:bold;margin-bottom:3px;}'
-    +'.co-det{font-size:10px;color:#333;line-height:1.6;}'
-    +'.pi-block{text-align:right;}'
-    +'.pi-num{font-size:18px;font-weight:bold;}'
-    +'.pi-dt{font-size:10px;margin-top:2px;}'
-    +'.pi-st{display:inline-block;border:1px solid #000;border-radius:3px;padding:1px 8px;font-size:10px;margin-top:4px;}'
-    +'.cb{border:1px solid #aaa;border-radius:3px;padding:8px;margin-bottom:12px;}'
-    +'.cb .lbl{font-size:9px;text-transform:uppercase;color:#555;margin-bottom:3px;}'
+    +'@page{size:A4 portrait;margin:0;}'
+    +'body{font-family:Arial,sans-serif;font-size:11px;color:#000;background:#fff;padding:14mm 14mm 12mm 14mm;}'
+    +'.hdr{display:flex;align-items:flex-start;justify-content:flex-end;padding-bottom:10px;border-bottom:2px solid #000;margin-bottom:14px;}'
+    +'.pi-num{font-size:20px;font-weight:bold;text-align:right;}'
+    +'.pi-dt{font-size:10px;margin-top:3px;text-align:right;}'
+    +'.pi-st{display:inline-block;font-size:10px;font-weight:bold;margin-top:4px;text-align:right;}'
+    +'.cb{margin-bottom:14px;}'
+    +'.cb .lbl{font-size:9px;text-transform:uppercase;color:#555;margin-bottom:4px;font-weight:bold;letter-spacing:.5px;}'
     +'.cb .nm{font-size:13px;font-weight:bold;margin-bottom:2px;}'
     +'.cb .inf{font-size:10px;color:#333;}'
-    +'.sec{font-size:10px;font-weight:bold;text-transform:uppercase;padding-bottom:3px;margin-bottom:6px;}'
-    +'table{width:100%;border-collapse:collapse;margin-bottom:12px;}'
-    +'thead th{font-size:10px;font-weight:bold;text-transform:uppercase;padding:4px;text-align:left;}'
+    +'.sec{font-size:9px;font-weight:bold;text-transform:uppercase;letter-spacing:.5px;color:#555;padding-bottom:4px;border-bottom:1px solid #000;margin-bottom:6px;}'
+    +'table{width:100%;border-collapse:collapse;margin-bottom:16px;}'
+    +'thead th{font-size:9px;font-weight:bold;text-transform:uppercase;padding:5px 4px;text-align:left;letter-spacing:.4px;}'
     +'tbody tr{border-bottom:1px solid #e0e0e0;}'
-    +'tbody td{padding:4px;font-size:10px;vertical-align:middle;}'
-    +'.tr-tot td{padding:5px 4px;font-size:13px;font-weight:bold;}'
+    +'tbody td{padding:5px 4px;font-size:10px;vertical-align:middle;}'
+    +'.tr-tot td{padding:6px 4px;font-size:15px;font-weight:bold;text-align:right;border-top:1px solid #ccc;}'
+    +'.tr-tot .tot-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.5px;}'
     +'.conds{margin-bottom:14px;}'
     +'.cond-item{border-left:3px solid #000;padding:3px 8px;margin-bottom:6px;}'
     +'.cond-lbl{font-size:9px;text-transform:uppercase;color:#555;}'
     +'.cond-val{font-size:11px;font-weight:bold;}';
-  var logoUrl='https://d7representacao-hub.github.io/d7-app/icon-192.png';
-  var htmlPdf='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Pedido #'+ped.numero+'</title>'
+  var htmlPdf='<!DOCTYPE html><html><head><meta charset="UTF-8"><title></title>'
     +'<style>'+css+'</style></head><body>'
     +'<div class="hdr">'
-    +'<div class="hdr-left">'
-    +'<div class="logo-box"><img class="logo" src="'+logoUrl+'" onerror="this.style.display=\'none\'"></div>'
-    +'<div><div class="co-name">D7 Representação Ltda</div>'
-    +'<div class="co-det">CNPJ 62.201.584/0001-10</div>'
-    +'<div class="co-det">d7representacao@gmail.com</div>'
-    +'<div class="co-det">CEL (62) 99600-0777</div>'
-    +'</div></div>'
-    +'<div class="pi-block">'
+    +'<div>'
     +'<div class="pi-num">Pedido #'+ped.numero+'</div>'
     +'<div class="pi-dt">'+data+'</div>'
     +'<div class="pi-st">'+(ped.status||'ABERTO').toUpperCase()+'</div>'
@@ -2091,30 +2078,26 @@ function imprimirPedido(id){
     +'</div>'
     +'<div class="cb"><div class="lbl">Cliente</div>'
     +'<div class="nm">'+(cli?cli.nome:'-')+'</div>'
-    +'<div class="inf">'+(cli&&cli.cnpj?'CNPJ: '+cli.cnpj+'&nbsp;&nbsp;':'')+(cli&&cli.cidade?cli.cidade+(cli.estado?' / '+cli.estado:''):'')+'</div></div>'
+    +'<div class="inf">'+(cli&&cli.cnpj?'CNPJ: '+cli.cnpj+'<br>':'')+(cli&&cli.cidade?cli.cidade+(cli.estado?' / '+cli.estado:''):'')+'</div></div>'
     +'<div class="sec">Itens do Pedido</div>'
     +'<table><thead><tr>'
-    +'<th style="width:55px">Código</th>'
-    +'<th style="width:65px">EAN</th>'
     +'<th>Produto</th>'
-    +'<th style="width:30px;text-align:center">Un.</th>'
-    +'<th style="width:30px;text-align:center">Qtd</th>'
-    +'<th style="width:72px;text-align:right">Vl.Unit.</th>'
-    +'<th style="width:72px;text-align:right">Total</th>'
+    +'<th style="width:40px;text-align:center">Qtd</th>'
+    +'<th style="width:40px;text-align:center">Un.</th>'
+    +'<th style="width:80px;text-align:right">Unit.</th>'
+    +'<th style="width:80px;text-align:right">Total</th>'
     +'</tr></thead><tbody>';
   (ped.itens||[]).forEach(function(item){
     htmlPdf+='<tr>'
-      +'<td>—</td>'
-      +'<td>—</td>'
-      +'<td><strong>'+(item.nome||'')+'</strong></td>'
-      +'<td style="text-align:center">'+(item.unidade||'UN')+'</td>'
+      +'<td>'+(item.nome||'')+'</td>'
       +'<td style="text-align:center">'+(item.qtd||0)+'</td>'
+      +'<td style="text-align:center">'+(item.unidade||'UN')+'</td>'
       +'<td style="text-align:right">'+fmtMoeda(item.preco)+'</td>'
       +'<td style="text-align:right">'+fmtMoeda(item.total)+'</td>'
       +'</tr>';
   });
   htmlPdf+='</tbody><tfoot><tr class="tr-tot">'
-    +'<td colspan="6" style="text-align:right">TOTAL</td>'
+    +'<td colspan="4" style="text-align:right;font-size:9px;text-transform:uppercase;letter-spacing:.5px;padding-right:8px;">Total</td>'
     +'<td style="text-align:right">'+fmtMoeda(ped.total)+'</td>'
     +'</tr></tfoot></table>'
     +'<div class="conds">'
@@ -2127,7 +2110,7 @@ function imprimirPedido(id){
     +(ped.prazosPgto?'<div style="margin-bottom:10px;font-size:11px;"><strong>Prazos Pgto:</strong> '+ped.prazosPgto+'</div>':'')
     +(ped.obs?'<div style="margin-bottom:10px;font-size:10px;"><strong>Obs:</strong> '+ped.obs+'</div>':'')
     +'</body></html>';
-  var w=window.open('','_blank','width=900');
+  var w=window.open('','_blank','width=800');
   w.document.write(htmlPdf);
   w.document.close();
   w.focus();
