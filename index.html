@@ -2014,57 +2014,63 @@ function imprimirPedido(id){
   var cli=clientes.find(function(c){return c.id===ped.clienteId;});
   var data=ped.criadoEm?new Date(ped.criadoEm).toLocaleDateString('pt-BR'):new Date().toLocaleDateString('pt-BR');
   var fmtMoeda=function(v){return'R$ '+parseFloat(v||0).toFixed(2).replace('.',',');};
+  var freteLbl=(ped.freteTipo||'').toUpperCase()==='CIF'?'CIF — Frete Incluso':(ped.freteTipo||'').toUpperCase()==='FOB'?'FOB — Por conta do Cliente':'Não informado';
+  var descargaLbl=ped.descarga&&ped.descarga!=='nao_informado'?ped.descarga:'Não informado';
   var css='*{margin:0;padding:0;box-sizing:border-box;}'
     +'body{font-family:Arial,sans-serif;font-size:11px;color:#000;background:#fff;}'
     +'@page{margin:12mm;size:A4;}'
     +'.hdr{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #000;padding-bottom:8px;margin-bottom:10px;}'
-    +'.co h2{font-size:14px;font-weight:bold;margin-bottom:3px;}'
     +'.co{font-size:10px;line-height:1.6;}'
+    +'.co h2{font-size:14px;font-weight:bold;margin-bottom:2px;}'
     +'.pi{text-align:right;}'
-    +'.pi .num{font-size:18px;font-weight:bold;}'
+    +'.pi .num{font-size:17px;font-weight:bold;}'
     +'.pi .dt{font-size:10px;margin-top:2px;}'
     +'.pi .st{display:inline-block;border:1px solid #000;border-radius:3px;padding:1px 7px;font-size:10px;margin-top:4px;}'
     +'.cb{border:1px solid #aaa;border-radius:3px;padding:8px;margin-bottom:10px;}'
     +'.cb .lbl{font-size:9px;text-transform:uppercase;color:#555;margin-bottom:3px;}'
     +'.cb .nm{font-size:13px;font-weight:bold;margin-bottom:2px;}'
     +'.cb .inf{font-size:10px;color:#333;}'
+    +'.sec{font-size:10px;font-weight:bold;text-transform:uppercase;border-bottom:1px solid #000;padding-bottom:3px;margin-bottom:6px;}'
     +'table{width:100%;border-collapse:collapse;margin-bottom:10px;}'
-    +'thead tr{border-bottom:2px solid #000;}'
-    +'thead th{font-size:10px;text-transform:uppercase;padding:4px 3px;text-align:left;}'
+    +'thead th{font-size:10px;font-weight:bold;text-transform:uppercase;padding:4px 4px;text-align:left;border-bottom:1px solid #000;}'
     +'tbody tr{border-bottom:1px solid #e0e0e0;}'
-    +'tbody td{padding:4px 3px;font-size:10px;vertical-align:top;}'
-    +'.tr-tot{border-top:2px solid #000;}'
-    +'.tr-tot td{padding:5px 3px;font-size:13px;font-weight:bold;}'
-    +'.conds{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}'
-    +'.ci{flex:1;min-width:90px;border:1px solid #aaa;border-radius:3px;padding:5px;}'
-    +'.cl{font-size:8px;text-transform:uppercase;color:#555;}'
-    +'.cv{font-size:11px;font-weight:bold;margin-top:2px;}'
-    +'.assin{margin-top:28px;border-top:1px dashed #000;padding-top:4px;text-align:center;font-size:10px;color:#555;}'
-    ;
+    +'tbody td{padding:4px 4px;font-size:10px;vertical-align:middle;}'
+    +'.tr-tot td{border-top:2px solid #000;padding:5px 4px;font-size:13px;font-weight:bold;}'
+    +'.conds{display:flex;gap:8px;margin-bottom:14px;}'
+    +'.ci{flex:1;border:1px solid #aaa;border-radius:3px;padding:6px;}'
+    +'.cl{font-size:8px;text-transform:uppercase;color:#555;margin-bottom:2px;}'
+    +'.cv{font-size:11px;font-weight:bold;}'
+    +'.assin-wrap{margin-top:30px;text-align:center;}'
+    +'.assin-line{display:inline-block;border-top:1px solid #000;width:180px;padding-top:4px;font-size:10px;color:#555;text-align:center;}';
 
   var htmlPdf='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Pedido #'+ped.numero+'</title>'
     +'<style>'+css+'</style></head><body>'
     +'<div class="hdr">'
-    +'<div class="co"><h2>D7 REPRESENTAÇÃO LTDA</h2>CNPJ: 62.201.584/0001-10<br>d7representacao@gmail.com<br>CEL: (62) 99600-0777</div>'
+    +'<div class="co"><h2>D7 REPRESENTÇÃO LTDA</h2>CNPJ: 62.201.584/0001-10<br>d7representacao@gmail.com<br>CEL: (62) 99600-0777</div>'
     +'<div class="pi"><div class="num">Pedido #'+ped.numero+'</div><div class="dt">'+data+'</div>'
     +'<div class="st">'+(ped.status||'ABERTO').toUpperCase()+'</div></div></div>'
     +'<div class="cb"><div class="lbl">Cliente</div>'
     +'<div class="nm">'+(cli?cli.nome:'-')+'</div>'
-    +'<div class="inf">'+(cli&&cli.cnpj?'CNPJ: '+cli.cnpj+'&nbsp;&nbsp;':'')+(cli&&cli.cidade?cli.cidade+(cli.estado?' / '+cli.estado:''):'')+(cli&&cli.endereco?'&nbsp;&nbsp;'+cli.endereco:'')+'</div></div>'
+    +'<div class="inf">'+(cli&&cli.cnpj?'CNPJ: '+cli.cnpj+'&nbsp;&nbsp;':'')+(cli&&cli.cidade?cli.cidade+(cli.estado?' / '+cli.estado:''):'')+'</div></div>'
+    +'<div class="sec">Itens do Pedido</div>'
     +'<table><thead><tr>'
-    +'<th>Código</th><th>EAN</th><th>Produto</th>'
-    +'<th style="text-align:center">Un.</th><th style="text-align:center">Qtd</th>'
-    +'<th style="text-align:right">Vl.Unit.</th><th style="text-align:right">Total</th>'
+    +'<th style="width:60px">Código</th>'
+    +'<th style="width:70px">EAN</th>'
+    +'<th>Produto</th>'
+    +'<th style="width:35px;text-align:center">Qtd</th>'
+    +'<th style="width:35px;text-align:center">Un.</th>'
+    +'<th style="width:70px;text-align:right">Unit.</th>'
+    +'<th style="width:75px;text-align:right">Total</th>'
     +'</tr></thead><tbody>';
   (ped.itens||[]).forEach(function(item){
     htmlPdf+='<tr>'
       +'<td>-</td>'
       +'<td>—</td>'
       +'<td><strong>'+(item.nome||'')+'</strong></td>'
-      +'<td style="text-align:center">'+(item.unidade||'UN')+'</td>'
       +'<td style="text-align:center">'+(item.qtd||0)+'</td>'
+      +'<td style="text-align:center">'+(item.unidade||'UN')+'</td>'
       +'<td style="text-align:right">'+fmtMoeda(item.preco)+'</td>'
-      +'<td style="text-align:right"><strong>'+fmtMoeda(item.total)+'</strong></td>'
+      +'<td style="text-align:right">'+fmtMoeda(item.total)+'</td>'
       +'</tr>';
   });
   htmlPdf+='</tbody><tfoot><tr class="tr-tot">'
@@ -2072,16 +2078,15 @@ function imprimirPedido(id){
     +'<td style="text-align:right">'+fmtMoeda(ped.total)+'</td>'
     +'</tr></tfoot></table>'
     +'<div class="conds">'
-    +'<div class="ci"><div class="cl">Frete</div><div class="cv">'+((ped.freteTipo||'').toUpperCase()==='CIF'?'CIF — Frete incluso':(ped.freteTipo||'').toUpperCase()==='FOB'?'FOB — Por conta do cliente':'Não informado')+'</div></div>'
-    +'<div class="ci"><div class="cl">Descarga</div><div class="cv">'+(ped.descarga||'Não informado')+'</div></div>'
-    +'<div class="ci"><div class="cl">Venc. Produto</div><div class="cv">'+(ped.produtoVenc||'—')+'</div></div>'
-    +(ped.freteVenc?'<div class="ci"><div class="cl">Venc. Frete</div><div class="cv">'+ped.freteVenc+'</div></div>':'')
+    +'<div class="ci"><div class="cl">Frete</div><div class="cv">'+freteLbl+'</div></div>'
+    +'<div class="ci"><div class="cl">Descarga</div><div class="cv">'+descargaLbl+'</div></div>'
+    +(ped.produtoVenc?'<div class="ci"><div class="cl">Venc. Produto</div><div class="cv">'+ped.produtoVenc+'</div></div>':'')
     +(ped.prazoEntrega?'<div class="ci"><div class="cl">Prazo Entrega</div><div class="cv">'+ped.prazoEntrega+' dias</div></div>':'')
     +(ped.pesoPedido?'<div class="ci"><div class="cl">Peso Total</div><div class="cv">'+ped.pesoPedido+' kg</div></div>':'')
     +'</div>'
     +(ped.prazosPgto?'<div style="margin-bottom:10px;font-size:11px;"><strong>Prazos Pgto:</strong> '+ped.prazosPgto+'</div>':'')
     +(ped.obs?'<div style="margin-bottom:10px;font-size:10px;"><strong>Obs:</strong> '+ped.obs+'</div>':'')
-    +'<div style="margin-top:28px;text-align:center;"><div style="display:inline-block;border-top:1px solid #000;width:180px;padding-top:4px;font-size:10px;color:#555;">Assinatura do Comprador</div></div>'
+    +'<div class="assin-wrap"><div class="assin-line">Assinatura do Comprador</div></div>'
     +'</body></html>';
   var w=window.open('','_blank','width=900,height=700');
   w.document.write(htmlPdf);
