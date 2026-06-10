@@ -1764,8 +1764,8 @@ function renderPedidos(){
       +'<td style="color:var(--accent);font-weight:600;">'+fmtMoeda(p.total)+'</td>'
       +'<td><span class="tag tag-'+p.status+'">'+p.status+'</span></td>'
       +'<td style="display:flex;gap:4px;">'
-      +'<button class="btn '<button class="btn btn-sm" style="background:var(--primary);color:#fff;padding:3px 10px;font-size:11px;border-radius:5px;" onclick="verPedido(\''+p.id+'\')">👁 Ver</button>'
-      +'<button class="btn '<button class="btn btn-sm" style="background:var(--surface2);color:var(--text);padding:3px 10px;font-size:11px;border-radius:5px;border:1px solid var(--border);" onclick="editarPedido(\''+p.id+'\')">✏️ Editar</button>'
+      +'<button class="btn btn-sm" style="background:var(--primary);color:#fff;padding:3px 10px;font-size:11px;border-radius:5px;" onclick="verPedido(\''+p.id+'\')">👁 Ver</button>'
+      +'<button class="btn btn-sm" style="background:var(--surface2);color:var(--text);padding:3px 10px;font-size:11px;border-radius:5px;border:1px solid var(--border);" onclick="editarPedido(\''+p.id+'\')">✏️ Editar</button>'
       +'<select class="form-select" style="padding:3px 6px;font-size:11px;height:28px;" onchange="mudarStatusPedido(\''+p.id+'\',this.value)">'
       +'<option value="">Status</option>'
       +'<option value="aberto"'+(p.status==='aberto'?' selected':'')+'>Aberto</option>'
@@ -1773,7 +1773,7 @@ function renderPedidos(){
       +'<option value="entregue"'+(p.status==='entregue'?' selected':'')+'>Entregue</option>'
       +'<option value="cancelado"'+(p.status==='cancelado'?' selected':'')+'>Cancelado</option>'
       +'</select>'
-      +'<button class="btn '<button class="btn btn-sm" style="background:transparent;color:var(--danger);padding:3px 8px;font-size:13px;" onclick="deletarPedido(\''+p.id+'\')">🗑</button>'
+      +'<button class="btn btn-sm" style="background:transparent;color:var(--danger);padding:3px 8px;font-size:13px;" onclick="deletarPedido(\''+p.id+'\')">🗑</button>'
       +'</td></tr>';
   }).join('');
 }
