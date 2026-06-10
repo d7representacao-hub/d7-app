@@ -1277,6 +1277,14 @@ WhatsApp: [Seu Telefone]</textarea>
         <label class="form-label">NCM</label>
         <input class="form-input" id="fp-ncm" placeholder="ex: 2106.90.10">
       </div>
+      <div class="form-group">
+        <label class="form-label">Emb.</label>
+        <input class="form-input" id="fp-emb" placeholder="ex: CX 12">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Emb.2</label>
+        <input class="form-input" id="fp-emb2" placeholder="ex: FD 6">
+      </div>
       <div class="form-group full">
         <label class="form-label">Informações Técnicas</label>
         <textarea class="form-textarea" id="fp-info" placeholder="Composição, validade, modo de uso, conservação..."></textarea>
@@ -1990,7 +1998,7 @@ function adicionarItemPedido(){
   // Se já existe, incrementar
   var existing=itensPedido.find(function(i){return i.produtoId===prodId;});
   if(existing){existing.qtd+=qtd;existing.total=existing.qtd*existing.preco;}
-  else{itensPedido.push({produtoId:prodId,nome:prod.nome,codigo:prod.codigo||'',ean:prod.ean||'',unidade:prod.unidade||'UN',preco:parseFloat(prod.preco||0),qtd:qtd,total:qtd*parseFloat(prod.preco||0)});}
+  else{itensPedido.push({produtoId:prodId,nome:prod.nome,codigo:prod.codigo||'',ean:prod.ean||'',ncm:prod.ncm||'',emb:prod.emb||'',emb2:prod.emb2||'',unidade:prod.unidade||'UN',preco:parseFloat(prod.preco||0),qtd:qtd,total:qtd*parseFloat(prod.preco||0)});}
   renderItensPedido();
   document.getElementById('sel-prod-pedido').value='';
   document.getElementById('qtd-pedido').value=1;
@@ -2182,9 +2190,9 @@ function imprimirPedido(id){
     +'<div class="sec">Itens do Pedido</div>'
     +'<table><thead><tr>'
     +'<th style="width:70px">Código</th>'
-    +'<th style="width:90px">EAN</th>'
+    +'<th style="width:90px">EAN</th>'+'<th style="width:60px">NCM</th>'
     +'<th>Produto</th>'
-    +'<th style="width:40px;text-align:center">Qtd</th>'
+    +'<th style="width:40px;text-align:center">Qtd</th>'+'<th style="width:45px;text-align:center">Emb.</th>'+'<th style="width:45px;text-align:center">Emb.2</th>'
     +'<th style="width:40px;text-align:center">Un.</th>'
     +'<th style="width:80px;text-align:right">Unit.</th>'
     +'<th style="width:80px;text-align:right">Total</th>'
@@ -2192,16 +2200,16 @@ function imprimirPedido(id){
   (ped.itens||[]).forEach(function(item){
     htmlPdf+='<tr>'
       +'<td style="font-size:9px;">'+(item.codigo||'—')+'</td>'
-      +'<td style="font-size:9px;">'+(item.ean||'—')+'</td>'
+      +'<td style="font-size:9px;">'+(item.ean||'—')+'</td>'+'<td style="font-size:9px;">'+(item.ncm||'—')+'</td>'
       +'<td>'+(item.nome||'')+'</td>'
-      +'<td style="text-align:center">'+(item.qtd||0)+'</td>'
+      +'<td style="text-align:center">'+(item.qtd||0)+'</td>'+'<td style="text-align:center">'+(item.emb||'—')+'</td>'+'<td style="text-align:center">'+(item.emb2||'—')+'</td>'
       +'<td style="text-align:center">'+(item.unidade||'UN')+'</td>'
       +'<td style="text-align:right">'+fmtMoeda(item.preco)+'</td>'
       +'<td style="text-align:right">'+fmtMoeda(item.total)+'</td>'
       +'</tr>';
   });
   htmlPdf+='</tbody><tfoot><tr class="tr-tot">'
-    +'<td colspan="6" style="text-align:right;font-size:9px;text-transform:uppercase;letter-spacing:.5px;padding-right:8px;">Total</td>'
+    +'<td colspan="9" style="text-align:right;font-size:9px;text-transform:uppercase;letter-spacing:.5px;padding-right:8px;">Total</td>'
     +'<td style="text-align:right">'+fmtMoeda(ped.total)+'</td>'
     +'</tr></tfoot></table>'
     +'<div style="display:flex;flex-wrap:wrap;gap:0;margin-bottom:14px;align-items:flex-start;">'
@@ -2571,7 +2579,7 @@ function salvarProduto(){
   var fornId=document.getElementById('fp-fornecedor').value;
   if(!nome){toast('Nome é obrigatório','error');return;}
   if(!fornId){toast('Selecione um fornecedor','error');return;}
-  var obj={id:editProdId||uid(),fornecedorId:fornId,nome:nome,codigo:document.getElementById('fp-codigo').value,categoria:document.getElementById('fp-categoria').value,unidade:document.getElementById('fp-unidade').value,estoque:parseFloat(document.getElementById('fp-estoque').value)||0,custo:parseFloat(document.getElementById('fp-custo').value)||0,preco:parseFloat(document.getElementById('fp-preco').value)||0,margem:parseFloat(document.getElementById('fp-margem').value)||0,ean:document.getElementById('fp-ean').value,ncm:document.getElementById('fp-ncm').value,info:document.getElementById('fp-info').value,descricao:document.getElementById('fp-descricao').value};
+  var obj={id:editProdId||uid(),fornecedorId:fornId,nome:nome,codigo:document.getElementById('fp-codigo').value,categoria:document.getElementById('fp-categoria').value,unidade:document.getElementById('fp-unidade').value,estoque:parseFloat(document.getElementById('fp-estoque').value)||0,custo:parseFloat(document.getElementById('fp-custo').value)||0,preco:parseFloat(document.getElementById('fp-preco').value)||0,margem:parseFloat(document.getElementById('fp-margem').value)||0,ean:document.getElementById('fp-ean').value,ncm:document.getElementById('fp-ncm').value,emb:document.getElementById('fp-emb').value,emb2:document.getElementById('fp-emb2').value,info:document.getElementById('fp-info').value,descricao:document.getElementById('fp-descricao').value};
   if(editProdId){var i=produtos.findIndex(function(p){return p.id===editProdId;});produtos[i]=obj;}else{produtos.push(obj);}
   saveP();fecharModal('modal-produto');renderCatalogo();agendarAutoSave();toast('Produto salvo!','success');
 }
