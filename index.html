@@ -2184,11 +2184,11 @@ function imprimirPedido(id){
     +'<div class="pi-dt">'+data+'</div>'
     +'</div>'
     +'</div>'
-    +'<div style="display:flex;gap:0;margin-bottom:14px;">'
-    +'<div class="cb" style="flex:1;margin-bottom:0;"><div class="lbl">Cliente</div>'
+    +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;">'
+    +'<div class="cb" style="margin-bottom:0;"><div class="lbl">Cliente</div>'
     +'<div class="nm">'+(cli?cli.nome:'-')+'</div>'
     +'<div class="inf">'+(cli&&cli.cnpj?'CNPJ: '+cli.cnpj+'<br>':'')+(cli&&cli.cidade?cli.cidade+(cli.estado?' / '+cli.estado:''):'')+'</div></div>'
-    +(function(){var fi=ped.itens&&ped.itens[0];var fp=fi?produtos.find(function(p){return p.id===fi.produtoId;}):null;var ff=fp?fornecedores.find(function(f){return f.id===fp.fornecedorId;}):null;return ff?'<div class="cb" style="flex:1;margin-bottom:0;text-align:right;"><div class="lbl">Fornecedor</div><div class="nm">'+ff.nome+'</div><div class="inf">'+(ff.cnpj?'CNPJ: '+ff.cnpj+'<br>':'')+(ff.cidade?ff.cidade+(ff.estado?' / '+ff.estado:''):'')+'</div></div>':'';})()
+    +(function(){var fi=ped.itens&&ped.itens[0];var fp=fi?produtos.find(function(p){return p.id===fi.produtoId;}):null;var ff=fp?fornecedores.find(function(f){return f.id===fp.fornecedorId;}):null;return ff?'<div class="cb" style="margin-bottom:0;text-align:right;"><div class="lbl">Fornecedor</div><div class="nm">'+ff.nome+'</div><div class="inf">'+(ff.cnpj?'CNPJ: '+ff.cnpj+'<br>':'')+(ff.cidade?ff.cidade+(ff.estado?' / '+ff.estado:''):'')+'</div></div>':'';})()
     +'</div>'
     +'<div class="sec">Itens do Pedido</div>'
     +'<table><thead><tr>'
