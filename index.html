@@ -133,7 +133,7 @@ tr:hover td { background: var(--surface2); }
 /* MODAL */
 .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.7); z-index: 100; align-items: center; justify-content: center; backdrop-filter: blur(3px); }
 .overlay.open { display: flex; }
-.modal { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; width: 700px; max-width: 96vw; max-height: 92vh; overflow-y: auto; padding: 26px; position: relative; box-shadow: 0 25px 60px rgba(0,0,0,.6); animation: fadeUp .2s ease; }
+.modal { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; width: 98vw; max-width: 98vw; max-height: 96vh; overflow-y: auto; padding: 20px; position: relative; box-shadow: 0 25px 60px rgba(0,0,0,.6); animation: fadeUp .2s ease; }
 .modal-sm { width: 480px; }
 .modal-lg { width: 860px; }
 @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:none} }
@@ -1387,12 +1387,12 @@ WhatsApp: [Seu Telefone]</textarea>
       <div class="form-group full">
         <label class="form-label" style="font-weight:700;color:var(--primary);margin-bottom:6px;">💳 Boletos Fornecedor</label>
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;"><span style="font-size:11px;opacity:.7;">Parcelas:</span><select id="fp-pp-qtd" class="form-input" style="width:60px;padding:3px 6px;" onchange="atualizarParcelas('pp',+this.value)"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select></div>
-        <div id="fp-pp-datas" style="display:flex;flex-direction:column;gap:4px;margin-top:2px;"></div>
+        <div id="fp-pp-datas" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;"></div>
       </div>
       <div class="form-group full">
         <label class="form-label" style="font-weight:700;color:var(--primary);margin-bottom:6px;">🚚 Boletos Frete</label>
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;"><span style="font-size:11px;opacity:.7;">Parcelas (0=CIF):</span><select id="fp-pf-qtd" class="form-input" style="width:60px;padding:3px 6px;" onchange="atualizarParcelas('pf',+this.value)"><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
-        <div id="fp-pf-datas" style="display:flex;flex-direction:column;gap:4px;margin-top:2px;"></div>
+        <div id="fp-pf-datas" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;"></div>
       </div>
         <!-- ===== FIM PARCELAS DINAMICAS ===== -->
 
@@ -1402,11 +1402,13 @@ WhatsApp: [Seu Telefone]</textarea>
         <select class="form-select" id="sel-forn-pedido" onchange="filtrarProdutosPedido()" style="flex:1;min-width:160px;">
           <option value="">Filtrar fornecedor...</option>
         </select>
-        <select class="form-select" id="sel-prod-pedido" style="flex:2;min-width:200px;">
-          <option value="">Selecione o produto...</option>
-        </select>
+        <div style="position:relative;flex:2;min-width:200px;">
+          <input class="form-input" id="prod-busca-input" type="text" placeholder="Digite o produto..." autocomplete="off" oninput="filtrarProdutos()" onfocus="filtrarProdutos()" onblur="setTimeout(function(){var d=document.getElementById('prod-lista-drop');if(d)d.style.display='none';},200)" style="width:100%;">
+          <div id="prod-lista-drop" style="display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--surface);border:1px solid var(--border);border-radius:8px;z-index:9999;max-height:220px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,.5);"></div>
+          <select id="sel-prod-pedido" style="display:none;"></select>
+        </div>
         <input class="form-input" id="qtd-pedido" type="number" min="1" value="1" placeholder="Qtd" style="width:80px;">
-        <button class="btn btn-primary" onclick="adicionarItemPedido()">+ Adicionar</button>
+        <button class="btn btn-primary" onclick="adicionarItemPedido();var bi=document.getElementById('prod-busca-input');if(bi){bi.value='';var d=document.getElementById('prod-lista-drop');if(d)d.style.display='none';}">+ Adicionar</button>
       </div>
     </div>
 
@@ -1979,7 +1981,7 @@ function aplicarDescontoCliente(){
 function filtrarProdutosPedido(){
   var fornId=document.getElementById('sel-forn-pedido').value;
   var sel=document.getElementById('sel-prod-pedido');
-  sel.innerHTML='<option value="">Selecione o produto...</option>';
+  sel.innerHTML='<option value="">Selecione o produto...</option>';var bi=document.getElementById('prod-busca-input');if(bi)bi.value='';
   var prods=fornId?produtos.filter(function(p){return p.fornecedorId===fornId;}):produtos;
   prods.forEach(function(p){
     var forn=fornecedores.find(function(f){return f.id===p.fornecedorId;});
@@ -1987,6 +1989,23 @@ function filtrarProdutosPedido(){
   });
 }
 
+function filtrarProdutos(){
+  var inp=document.getElementById('prod-busca-input');
+  var drop=document.getElementById('prod-lista-drop');
+  var sel=document.getElementById('sel-prod-pedido');
+  if(!inp||!drop||!sel)return;
+  var q=inp.value.toLowerCase().trim();
+  var opts=Array.from(sel.options).filter(function(o){return o.value&&(!q||o.text.toLowerCase().includes(q));});
+  if(!opts.length){drop.style.display='none';return;}
+  drop.innerHTML=opts.map(function(o){return '<div style="padding:8px 12px;cursor:pointer;font-size:13px;border-bottom:1px solid var(--border);" onmousedown="selecionarProduto(this)">'+o.text+'<\/div>';}).join('');
+  opts.forEach(function(o,i){drop.children[i]._prodId=o.value;});
+  drop.style.display='block';
+}
+function selecionarProduto(el){
+  document.getElementById('sel-prod-pedido').value=el._prodId;
+  document.getElementById('prod-busca-input').value=el.textContent;
+  document.getElementById('prod-lista-drop').style.display='none';
+}
 function adicionarItemPedido(){
   var prodId=document.getElementById('sel-prod-pedido').value;
   var qtd=parseFloat(document.getElementById('qtd-pedido').value)||1;
@@ -2044,8 +2063,8 @@ function atualizarParcelas(tipo,qtd){
   cont.innerHTML='';
   for(var i=1;i<=qtd;i++){
     var d=document.createElement('div');
-    d.style.cssText='display:flex;align-items:center;gap:8px;';
-    d.innerHTML='<span style="font-size:11px;opacity:.7;min-width:22px;">'+i+'x</span><input class="form-input" id="fp-'+tipo+'-d'+i+'" type="text" placeholder="ex: 30D" style="flex:1;padding:4px 8px;">';
+    d.style.cssText='display:flex;flex-direction:column;gap:2px;align-items:center;';
+    d.innerHTML='<span style="font-size:10px;opacity:.6;">'+i+'x</span><input class="form-input" id="fp-'+tipo+'-d'+i+'" type="text" placeholder="DD" style="width:65px;padding:4px;text-align:center;">';
     cont.appendChild(d);
   }
 }
