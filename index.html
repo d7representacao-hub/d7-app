@@ -2094,8 +2094,10 @@ function previewPedido(){
   var cliSel=document.getElementById('fp-cliente-pedido');
   var cliNome=cliSel&&cliSel.selectedIndex>=0?cliSel.options[cliSel.selectedIndex].text:'—';
   if(!cliNome||cliNome.indexOf('Selecio')>=0)cliNome='—';
+  var cliLetra=(cliNome!='—'?cliNome.trim().charAt(0).toUpperCase():'?');
   var fornSel=document.getElementById('sel-forn-pedido');
   var fornNome=fornSel&&fornSel.selectedIndex>0?fornSel.options[fornSel.selectedIndex].text:'—';
+  var fornLetra=(fornNome!='—'?fornNome.trim().charAt(0).toUpperCase():'?');
   var statusEl=document.getElementById('fp-status-pedido');
   var statusVal=statusEl?statusEl.value||'Aberto':'Aberto';
   var desconto=document.getElementById('fp-desconto-pedido')?document.getElementById('fp-desconto-pedido').value||'0':'0';
@@ -2127,62 +2129,70 @@ function previewPedido(){
     var tot=tds[5]?tds[5].textContent.trim():'';
     return nome?{nome:nome,qtd:qtd,emb:emb,un:un,unit:unit,total:tot}:null;
   }).filter(Boolean);
-  var h='<div style="border-bottom:3px solid var(--primary);padding-bottom:12px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:flex-start;">';
-  h+='<div><div style="font-size:16px;font-weight:800;color:var(--primary);letter-spacing:.5px;">D7 REPRESENTAÇÃO</div>';
-  h+='<div style="font-size:11px;opacity:.45;margin-top:2px;letter-spacing:.5px;">PEDIDO DE COMPRA</div></div>';
-  h+='<div style="text-align:right;"><span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;background:rgba(124,58,237,.2);color:var(--primary);">'+statusVal.toUpperCase()+'</span>';
-  if(prodVenc)h+='<div style="font-size:10px;opacity:.45;margin-top:4px;">Venc. produto: '+prodVenc+'</div>';
-  h+='</div></div>';
-  h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">';
-  h+='<div style="border:1px solid var(--border);border-radius:6px;padding:10px;"><div style="font-size:9px;letter-spacing:1px;opacity:.45;margin-bottom:4px;">CLIENTE</div><div style="font-size:13px;font-weight:700;line-height:1.4;">'+cliNome+'</div></div>';
-  h+='<div style="border:1px solid var(--border);border-radius:6px;padding:10px;"><div style="font-size:9px;letter-spacing:1px;opacity:.45;margin-bottom:4px;">FORNECEDOR</div><div style="font-size:13px;font-weight:700;line-height:1.4;">'+fornNome+'</div></div>';
+  var totalItens=itens.length;
+  var h='';
+  h+='<div style="background:var(--primary);padding:14px 18px;margin:-28px -32px 18px;display:flex;justify-content:space-between;align-items:center;">';
+  h+='<div><div style="font-size:14px;font-weight:700;color:#fff;letter-spacing:.5px;">D7 REPRESENTAÇÃO</div>';
+  if(fornNome!='—'||cliNome!='—')h+='<div style="font-size:11px;color:rgba(255,255,255,.65);margin-top:2px;">'+fornNome+' → '+cliNome+'</div>';
   h+='</div>';
-  h+='<table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:16px;">';
-  h+='<thead><tr style="background:rgba(124,58,237,.12);">';
-  h+='<th style="text-align:left;padding:7px 8px;font-size:10px;font-weight:700;opacity:.6;border-bottom:1px solid var(--border);">PRODUTO</th>';
-  h+='<th style="text-align:center;padding:7px 6px;font-size:10px;font-weight:700;opacity:.6;border-bottom:1px solid var(--border);">EMB</th>';
-  h+='<th style="text-align:center;padding:7px 6px;font-size:10px;font-weight:700;opacity:.6;border-bottom:1px solid var(--border);">UN</th>';
-  h+='<th style="text-align:center;padding:7px 6px;font-size:10px;font-weight:700;opacity:.6;border-bottom:1px solid var(--border);">QTD</th>';
-  h+='<th style="text-align:right;padding:7px 6px;font-size:10px;font-weight:700;opacity:.6;border-bottom:1px solid var(--border);">UNIT.</th>';
-  h+='<th style="text-align:right;padding:7px 8px;font-size:10px;font-weight:700;opacity:.6;border-bottom:1px solid var(--border);">TOTAL</th>';
-  h+='</tr></thead><tbody>';
+  h+='<span style="background:rgba(255,255,255,.18);color:#fff;font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px;">'+statusVal.toUpperCase()+'</span>';
+  h+='</div>';
+  h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">';
+  h+='<div style="border:1px solid var(--border);border-radius:8px;padding:10px;display:flex;align-items:center;gap:10px;">';
+  h+='<div style="width:36px;height:36px;border-radius:50%;background:rgba(124,58,237,.2);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:var(--primary);flex-shrink:0;">'+fornLetra+'</div>';
+  h+='<div><div style="font-size:9px;letter-spacing:1px;opacity:.45;margin-bottom:2px;">FORNECEDOR</div><div style="font-size:12px;font-weight:600;line-height:1.3;">'+fornNome+'</div></div></div>';
+  h+='<div style="border:1px solid var(--border);border-radius:8px;padding:10px;display:flex;align-items:center;gap:10px;">';
+  h+='<div style="width:36px;height:36px;border-radius:50%;background:rgba(16,185,129,.15);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#10b981;flex-shrink:0;">'+cliLetra+'</div>';
+  h+='<div><div style="font-size:9px;letter-spacing:1px;opacity:.45;margin-bottom:2px;">CLIENTE</div><div style="font-size:12px;font-weight:600;line-height:1.3;">'+cliNome+'</div></div></div>';
+  h+='</div>';
+  h+='<div style="margin-bottom:16px;">';
+  h+='<div style="font-size:10px;letter-spacing:.8px;opacity:.4;margin-bottom:8px;">'+(totalItens>0?totalItens+' ITEM'+(totalItens>1?'S':''):'ITENS DO PEDIDO')+'</div>';
+  h+='<div style="display:grid;grid-template-columns:1fr 52px 52px 40px 72px 72px;gap:4px;padding:5px 8px;border-bottom:1px solid var(--border);margin-bottom:4px;">';
+  h+='<span style="font-size:10px;font-weight:600;opacity:.5;letter-spacing:.5px;">PRODUTO</span>';
+  h+='<span style="font-size:10px;font-weight:600;opacity:.5;letter-spacing:.5px;text-align:center;">QTD</span>';
+  h+='<span style="font-size:10px;font-weight:600;opacity:.5;letter-spacing:.5px;text-align:center;">EMB</span>';
+  h+='<span style="font-size:10px;font-weight:600;opacity:.5;letter-spacing:.5px;text-align:center;">UN</span>';
+  h+='<span style="font-size:10px;font-weight:600;opacity:.5;letter-spacing:.5px;text-align:right;">VL.UNIT</span>';
+  h+='<span style="font-size:10px;font-weight:600;opacity:.5;letter-spacing:.5px;text-align:right;">VL.TOTAL</span>';
+  h+='</div>';
   if(itens.length){
     itens.forEach(function(it,idx){
-      h+='<tr style="'+(idx%2?'background:rgba(255,255,255,.03);':'')+'">';
-      h+='<td style="padding:7px 8px;border-bottom:1px solid rgba(255,255,255,.05);">'+it.nome+'</td>';
-      h+='<td style="text-align:center;padding:7px 6px;border-bottom:1px solid rgba(255,255,255,.05);">'+it.emb+'</td>';
-      h+='<td style="text-align:center;padding:7px 6px;border-bottom:1px solid rgba(255,255,255,.05);">'+it.un+'</td>';
-      h+='<td style="text-align:center;padding:7px 6px;border-bottom:1px solid rgba(255,255,255,.05);font-weight:700;">'+it.qtd+'</td>';
-      h+='<td style="text-align:right;padding:7px 6px;border-bottom:1px solid rgba(255,255,255,.05);">'+it.unit+'</td>';
-      h+='<td style="text-align:right;padding:7px 8px;border-bottom:1px solid rgba(255,255,255,.05);font-weight:700;color:var(--primary);">'+it.total+'</td>';
-      h+='</tr>';
+      h+='<div style="display:grid;grid-template-columns:1fr 52px 52px 40px 72px 72px;gap:4px;align-items:center;padding:7px 8px;border-radius:6px;'+(idx%2?'background:rgba(255,255,255,.04);':'')+'">';
+      h+='<div style="font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+it.nome+'</div>';
+      h+='<div style="text-align:center;"><span style="background:rgba(124,58,237,.2);color:var(--primary);font-size:13px;font-weight:700;padding:2px 8px;border-radius:4px;display:inline-block;">'+it.qtd+'</span></div>';
+      h+='<div style="font-size:12px;text-align:center;opacity:.7;">'+it.emb+'</div>';
+      h+='<div style="font-size:12px;text-align:center;opacity:.7;">'+it.un+'</div>';
+      h+='<div style="font-size:12px;text-align:right;opacity:.7;">'+it.unit+'</div>';
+      h+='<div style="font-size:13px;font-weight:700;text-align:right;color:var(--primary);">'+it.total+'</div>';
+      h+='</div>';
     });
   }else{
-    h+='<tr><td colspan="6" style="text-align:center;padding:24px;opacity:.3;font-style:italic;font-size:12px;">Adicione produtos no formulário ao lado</td></tr>';
+    h+='<div style="text-align:center;padding:24px;opacity:.3;font-style:italic;font-size:12px;">Adicione produtos no formulário</div>';
   }
-  h+='</tbody></table>';
+  h+='</div>';
   h+='<div style="display:flex;justify-content:flex-end;margin-bottom:16px;">';
-  h+='<div style="min-width:50%;">';
-  if(desconto&&desconto!='0')h+='<div style="display:flex;justify-content:space-between;padding:5px 0;font-size:12px;border-bottom:1px solid var(--border);"><span style="opacity:.6;">Desconto</span><span style="color:#f59e0b;">-'+desconto+'%</span></div>';
-  if(freteValor&&freteValor!='0'&&freteValor!='0,00')h+='<div style="display:flex;justify-content:space-between;padding:5px 0;font-size:12px;border-bottom:1px solid var(--border);"><span style="opacity:.6;">Frete ('+freteTipoVal+')</span><span>R$ '+freteValor+'</span></div>';
-  h+='<div style="display:flex;justify-content:space-between;padding:8px 0;font-size:17px;font-weight:800;"><span>TOTAL</span><span style="color:var(--primary);">'+total+'</span></div>';
+  h+='<div style="min-width:55%;border:1px solid var(--border);border-radius:8px;overflow:hidden;">';
+  if(desconto&&desconto!='0')h+='<div style="display:flex;justify-content:space-between;padding:7px 12px;font-size:12px;border-bottom:1px solid var(--border);"><span style="opacity:.6;">Desconto</span><span style="color:#f59e0b;font-weight:600;">−'+desconto+'%</span></div>';
+  if(freteValor&&freteValor!='0')h+='<div style="display:flex;justify-content:space-between;padding:7px 12px;font-size:12px;border-bottom:1px solid var(--border);"><span style="opacity:.6;">Frete ('+freteTipoVal+')</span><span>R$ '+freteValor+'</span></div>';
+  h+='<div style="display:flex;justify-content:space-between;padding:10px 12px;font-size:16px;font-weight:800;background:rgba(124,58,237,.1);"><span>TOTAL</span><span style="color:var(--primary);">'+total+'</span></div>';
   h+='</div></div>';
-  var infoItems=[];
-  if(prazoEnt)infoItems.push({l:'PRAZO ENTREGA',v:prazoEnt+' dias'});
-  if(peso)infoItems.push({l:'PESO TOTAL',v:peso+' kg'});
-  if(descargaVal)infoItems.push({l:'DESCARGA',v:descargaVal});
-  if(infoItems.length){
-    h+='<div style="display:grid;grid-template-columns:repeat('+Math.min(infoItems.length,3)+',1fr);gap:8px;margin-bottom:16px;">';
-    infoItems.forEach(function(x){h+='<div style="border:1px solid var(--border);border-radius:6px;padding:8px;"><div style="font-size:9px;letter-spacing:1px;opacity:.45;margin-bottom:3px;">'+x.l+'</div><div style="font-size:13px;font-weight:700;">'+x.v+'</div></div>';});
+  var info=[];
+  if(prazoEnt)info.push({l:'PRAZO',v:prazoEnt+' dias'});
+  if(peso)info.push({l:'PESO',v:peso+' kg'});
+  if(descargaVal)info.push({l:'DESCARGA',v:descargaVal});
+  if(prodVenc)info.push({l:'VENC. PRODUTO',v:prodVenc});
+  if(info.length){
+    h+='<div style="display:grid;grid-template-columns:repeat('+Math.min(info.length,4)+',1fr);gap:8px;margin-bottom:16px;">';
+    info.forEach(function(x){h+='<div style="border:1px solid var(--border);border-radius:6px;padding:8px 10px;"><div style="font-size:9px;letter-spacing:.8px;opacity:.4;margin-bottom:3px;">'+x.l+'</div><div style="font-size:13px;font-weight:700;">'+x.v+'</div></div>';});
     h+='</div>';
   }
   if(ppDatas.length||pfDatas.length){
     h+='<div style="display:grid;grid-template-columns:'+(ppDatas.length&&pfDatas.length?'1fr 1fr':'1fr')+';gap:10px;margin-bottom:16px;">';
-    if(ppDatas.length){h+='<div style="border:1px solid var(--border);border-radius:6px;padding:10px;"><div style="font-size:9px;letter-spacing:1px;opacity:.45;margin-bottom:6px;">BOLETOS FORNECEDOR</div>'+ppDatas.map(function(d,i){return '<div style="display:flex;justify-content:space-between;font-size:12px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.05);"><span style="opacity:.6;">'+(i+1)+'ª parc.</span><strong>'+d+'</strong></div>';}).join('')+'</div>';}
-    if(pfDatas.length){h+='<div style="border:1px solid var(--border);border-radius:6px;padding:10px;"><div style="font-size:9px;letter-spacing:1px;opacity:.45;margin-bottom:6px;">BOLETOS FRETE</div>'+pfDatas.map(function(d,i){return '<div style="display:flex;justify-content:space-between;font-size:12px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.05);"><span style="opacity:.6;">'+(i+1)+'ª parc.</span><strong>'+d+'</strong></div>';}).join('')+'</div>';}
+    if(ppDatas.length){h+='<div style="border:1px solid var(--border);border-radius:8px;padding:10px;"><div style="font-size:9px;letter-spacing:.8px;opacity:.4;margin-bottom:8px;">BOLETOS FORNECEDOR</div>'+ppDatas.map(function(d,i){return '<div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.05);"><span style="opacity:.5;">'+(i+1)+'ª parc.</span><strong>'+d+'</strong></div>';}).join('')+'</div>';}
+    if(pfDatas.length){h+='<div style="border:1px solid var(--border);border-radius:8px;padding:10px;"><div style="font-size:9px;letter-spacing:.8px;opacity:.4;margin-bottom:8px;">BOLETOS FRETE</div>'+pfDatas.map(function(d,i){return '<div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.05);"><span style="opacity:.5;">'+(i+1)+'ª parc.</span><strong>'+d+'</strong></div>';}).join('')+'</div>';}
     h+='</div>';
   }
-  if(obs)h+='<div style="border:1px solid var(--border);border-radius:6px;padding:10px;"><div style="font-size:9px;letter-spacing:1px;opacity:.45;margin-bottom:6px;">OBSERVAÇÕES</div><div style="font-size:12px;font-style:italic;opacity:.8;">'+obs+'</div></div>';
+  if(obs)h+='<div style="border:1px solid var(--border);border-radius:8px;padding:10px;"><div style="font-size:9px;letter-spacing:.8px;opacity:.4;margin-bottom:6px;">OBSERVAÇÕES</div><div style="font-size:12px;font-style:italic;opacity:.75;">'+obs+'</div></div>';
   el.innerHTML=h;
 }
 if(!window._previewInterval){window._previewInterval=setInterval(function(){var m=document.getElementById('modal-pedido');if(m&&getComputedStyle(m).display!='none')previewPedido();},500);}
