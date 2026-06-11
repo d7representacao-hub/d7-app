@@ -2017,7 +2017,7 @@ function renderItensPedido(){
     return '<div class="pedido-item-row">'
       +'<span>'+esc(it.nome)+'</span>'
       +'<input type="number" class="form-input" min="0.01" step="0.01" value="'+it.qtd+'" style="width:80px;padding:4px;" onchange="updateItemPedido('+idx+',\'qtd\',this.value)">'
-      +'<span style="font-size:12px;text-align:center">'+(it.emb||'—')+'</span>'
+      +'<input class="form-input" value="'+esc(it.emb||'')+'" style="width:65px;padding:4px;text-align:center;" onchange="updateItemPedido('+idx+',\'emb\',this.value)">'
       +'<input class="form-input" value="'+esc(it.unidade)+'" style="width:55px;padding:4px;text-align:center;" onchange="updateItemPedido('+idx+',\'unidade\',this.value)">'
       +'<input type="number" class="form-input" min="0" step="0.01" value="'+it.preco+'" style="width:100px;padding:4px;" onchange="updateItemPedido('+idx+',\'preco\',this.value)">'
       +'<span style="color:var(--accent);font-weight:600;">'+fmtMoeda(it.total)+'</span>'
