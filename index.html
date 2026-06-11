@@ -2614,7 +2614,7 @@ function deletarProduto(id){if(!confirm('Excluir produto?'))return;produtos=prod
 
 // ── TABELAS DE PREÇO ──
 function renderTabelas(){
-  var margMin=parseFloat(document.getElementById('filter-marg').value)||0;
+  var margMin=parseFloat((document.getElementById('filter-marg')||{value:'0'}).value)||0;
   var forn=document.getElementById('filter-forn-tab').value;
   var selForn=document.getElementById('filter-forn-tab');
   selForn.innerHTML='<option value="">Todos os fornecedores</option>';
@@ -3044,7 +3044,7 @@ function backupJSON(){
 }
 // ── GOOGLE DRIVE BACKUP ──
 function gDriveGetToken(callback){
-  var clientId=(document.getElementById('gdrive-clientid')||{}).value||gv('cfg-gclient')||'283973846228-d25qk8gglbh8ckc5ba66oq6b592qss60.apps.googleusercontent.com';
+  var clientId=(document.getElementById('gdrive-clientid')||{}).value||'283973846228-d25qk8gglbh8ckc5ba66oq6b592qss60.apps.googleusercontent.com';
   if(!clientId){alert('Configure o Client ID do Google em Config IA → Google Drive.');return;}
   function init(){
     var tc=google.accounts.oauth2.initTokenClient({
