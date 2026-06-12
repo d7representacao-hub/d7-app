@@ -1394,17 +1394,17 @@ WhatsApp: [Seu Telefone]</textarea>
             <label class="form-label">Venc. Boleto Produto</label>
             <input class="form-input" id="fp-produto-venc" type="date">
           </div>
-        </div>
+        
+          <div style="grid-column:span 2">
+            <label class="form-label">Prazo Entrega (dias)</label>
+            <input class="form-input" id="fp-prazo-entrega" type="number" min="0" placeholder="ex: 15">
+          </div>
+          <div style="grid-column:span 2">
+            <label class="form-label">Peso Total (kg)</label>
+            <input class="form-input" id="fp-peso-pedido" type="number" step="0.01" placeholder="ex: 1500">
+          </div></div>
       </div>
     </div>
-      <div class="form-group">
-        <label class="form-label">Prazo Entrega (dias)</label>
-        <input class="form-input" id="fp-prazo-entrega" type="number" min="0" placeholder="ex: 15">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Peso Total (kg)</label>
-        <input class="form-input" id="fp-peso-pedido" type="number" step="0.01" placeholder="ex: 1500">
-      </div>
         <!-- ===== PARCELAS DINAMICAS - CONCLUIDO - NAO MODIFICAR ===== -->
       <div class="form-group full">
         <label class="form-label" style="font-weight:700;color:var(--primary);margin-bottom:6px;">💳 Boletos Fornecedor</label>
