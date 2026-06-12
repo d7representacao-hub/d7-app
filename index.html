@@ -1368,7 +1368,7 @@ WhatsApp: [Seu Telefone]</textarea>
       </div>
       <div class="form-group full" style="border-top:1px solid var(--border);padding-top:14px;margin-top:4px;">
         <label class="form-label" style="font-weight:700;color:var(--primary);">🚚 Cobrança de Frete</label>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:8px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-top:8px;">
           <div>
             <label class="form-label">Frete</label>
             <select class="form-select" id="fp-frete-tipo">
@@ -1385,11 +1385,11 @@ WhatsApp: [Seu Telefone]</textarea>
             <label class="form-label">Venc. Boleto Frete</label>
             <input class="form-input" id="fp-frete-venc" type="date">
           </div>
+          <div>
+            <label class="form-label">Venc. Boleto Produto</label>
+            <input class="form-input" id="fp-produto-venc" type="date">
+          </div>
         </div>
-      </div>
-      <div class="form-group full">
-        <label class="form-label">Vencimento Boleto do Produto</label>
-        <input class="form-input" id="fp-produto-venc" type="date">
       </div>
     </div>
       <div class="form-group">
@@ -1454,14 +1454,18 @@ WhatsApp: [Seu Telefone]</textarea>
 <!-- MODAL VER PEDIDO -->
 <div class="overlay" id="modal-ver-pedido">
   <div class="modal modal-lg">
-    <button class="modal-close" onclick="fecharModal('modal-ver-pedido')">✕</button>
-    <div id="ver-pedido-content"></div>
-    <div class="modal-footer">
-      <button class="btn btn-outline" onclick="fecharModal('modal-ver-pedido')">Fechar</button>
-      <button class="btn" style="background:#25D366;color:#fff;" onclick="compartilharWhatsApp(pedidoIdVer)">📲 WhatsApp</button>
-      <button class="btn btn-outline" onclick="compartilharEmail(pedidoIdVer)">📧 Email</button>
-      <button class="btn btn-primary" onclick="imprimirPedido(pedidoIdVer)">🖨️ Imprimir / PDF</button>
+    <div style="display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);padding-bottom:12px;margin-bottom:12px;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <button class="modal-close" onclick="fecharModal('modal-ver-pedido')" style="position:static;margin:0;">✕</button>
+        <strong style="font-size:15px;">🛒 Pedido</strong>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn" style="background:#25D366;color:#fff;" onclick="compartilharWhatsApp(pedidoIdVer)">📲 WhatsApp</button>
+        <button class="btn btn-outline" onclick="compartilharEmail(pedidoIdVer)">📧 Email</button>
+        <button class="btn btn-primary" onclick="imprimirPedido(pedidoIdVer)">🖨️ Imprimir / PDF</button>
+      </div>
     </div>
+    <div id="ver-pedido-content"></div>
   </div>
 </div>
 
