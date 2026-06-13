@@ -1399,8 +1399,8 @@ WhatsApp: [Seu Telefone]</textarea>
           <div>
             <label class="form-label">Descarga</label>
             <select class="form-select" id="fp-descarga-pedido">
-              <option value="cliente">&#x1F535; Descarga pelo Cliente</option>
-              <option value="representante">&#x1F7E0; Descarga pela Transportadora / Representante</option>
+              <option value="cliente">&#x1F535; Pelo Cliente</option>
+              <option value="representante">&#x1F7E0; Pela Transportadora / Representante</option>
               <option value="nao_informado">&#x26AA; Não informado</option>
             </select>
           </div>
@@ -2185,7 +2185,7 @@ function previewPedido(){
     var entrega='';
     if(prazoEnt||peso||descargaVal){
       entrega+='<div style="font-size:10px;letter-spacing:.8px;opacity:.4;margin-bottom:8px;">ENTREGA</div>';
-      if(prazoEnt)entrega+='<div style="display:flex;justify-content:space-between;padding:6px 0;font-size:13px;border-bottom:1px solid rgba(255,255,255,.06);"><span style="opacity:.5;">Prazo</span><strong>'+prazoEnt+' dias</strong></div>';
+
       if(peso)entrega+='<div style="display:flex;justify-content:space-between;padding:6px 0;font-size:13px;border-bottom:1px solid rgba(255,255,255,.06);"><span style="opacity:.5;">Peso total</span><strong>'+peso+' kg</strong></div>';
       if(descargaVal)entrega+='<div style="display:flex;justify-content:space-between;padding:6px 0;font-size:13px;"><span style="opacity:.5;">Descarga</span><strong>'+descargaVal+'</strong></div>';
       h+='<div>'+entrega+'</div>';
