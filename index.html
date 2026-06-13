@@ -1371,7 +1371,20 @@ WhatsApp: [Seu Telefone]</textarea>
         <input class="form-input" id="fp-obs-pedido" placeholder="Observações do pedido">
       </div>
 
-      <div class="form-group full" style="border:1px solid var(--border);border-radius:10px;padding:16px;margin-top:8px;">
+      <div style="margin-bottom:10px;">
+          <div style="margin-top:12px;border-top:1px solid var(--border);padding-top:12px;">
+      <div style="font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px;">📦 Adicionar Produto</div>
+      <select class="form-select" id="sel-forn-pedido" onchange="filtrarProdutosPedido()" style="width:100%;margin-bottom:8px;">
+        <option value="">Todos os fornecedores</option>
+      </select>
+      <div id="prod-catalog" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px;max-height:160px;overflow-y:auto;margin-bottom:8px;"></div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <span id="prod-selected-nome" style="flex:1;font-size:12px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">← Selecione um produto</span>
+        <input class="form-input" id="qtd-pedido" type="number" min="1" value="1" placeholder="Qtd" style="width:70px;">
+        <button class="btn btn-primary" onclick="adicionarItemPedido()">+ Adicionar</button>
+      </div>
+    </div>
+<div class="form-group full" style="border:1px solid var(--border);border-radius:10px;padding:16px;margin-top:8px;">
         <label class="form-label" style="font-weight:700;color:var(--primary);margin-bottom:10px;">&#x1F69A; Frete</label>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;margin-bottom:10px;">
           <div style="grid-column:1/-1">
@@ -1427,20 +1440,7 @@ WhatsApp: [Seu Telefone]</textarea>
       </div>
         <!-- ===== FIM PARCELAS DINAMICAS ===== -->
 
-    <div style="margin-bottom:10px;">
-          <div style="margin-top:12px;border-top:1px solid var(--border);padding-top:12px;">
-      <div style="font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px;">📦 Adicionar Produto</div>
-      <select class="form-select" id="sel-forn-pedido" onchange="filtrarProdutosPedido()" style="width:100%;margin-bottom:8px;">
-        <option value="">Todos os fornecedores</option>
-      </select>
-      <div id="prod-catalog" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px;max-height:160px;overflow-y:auto;margin-bottom:8px;"></div>
-      <div style="display:flex;gap:8px;align-items:center;">
-        <span id="prod-selected-nome" style="flex:1;font-size:12px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">← Selecione um produto</span>
-        <input class="form-input" id="qtd-pedido" type="number" min="1" value="1" placeholder="Qtd" style="width:70px;">
-        <button class="btn btn-primary" onclick="adicionarItemPedido()">+ Adicionar</button>
-      </div>
-    </div>
-
+    
     <div class="pedido-items" id="pedido-items-wrap" style="display:none">
       
       <div id="pedido-items-body">
