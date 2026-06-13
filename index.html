@@ -2115,29 +2115,19 @@ function previewPedido(){
   var totalItens=itens.length;
   if(totalItens>0||true){
     h+='<div style="font-size:10px;letter-spacing:.8px;opacity:.45;margin-bottom:10px;">'+(totalItens>0?totalItens+' ITEM'+(totalItens>1?'S':''):'ITENS DO PEDIDO')+'</div>';
-    h+='<table style="width:100%;border-collapse:collapse;margin-bottom:20px;">';
-    h+='<thead><tr style="border-bottom:1px solid var(--border);">';
-    h+='<th style="text-align:left;padding:6px 0;font-size:11px;font-weight:600;opacity:.5;letter-spacing:.5px;">PRODUTO</th>';
-    h+='<th style="text-align:center;padding:6px 8px;font-size:11px;font-weight:600;opacity:.5;letter-spacing:.5px;">QTD</th>';
-    h+='<th style="text-align:right;padding:6px 8px;font-size:11px;font-weight:600;opacity:.5;letter-spacing:.5px;">UNIT.</th>';
-    h+='<th style="text-align:right;padding:6px 0;font-size:11px;font-weight:600;opacity:.5;letter-spacing:.5px;">TOTAL</th>';
-    h+='</tr></thead><tbody>';
+    h+='<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:20px;">';
     if(itens.length){
       itens.forEach(function(it,idx){
-        h+='<tr style="border-bottom:1px solid rgba(255,255,255,.06);">';
-        h+='<td style="padding:10px 0;">';
-        h+='<div style="font-size:13px;font-weight:500;">'+it.nome+'</div>';
-        if(it.emb||it.un)h+='<div style="font-size:11px;opacity:.45;margin-top:2px;">'+[it.emb,it.un].filter(Boolean).join(' · ')+'</div>';
-        h+='</td>';
-        h+='<td style="text-align:center;padding:10px 8px;"><span style="background:rgba(124,58,237,.25);color:var(--primary);font-size:14px;font-weight:700;padding:3px 10px;border-radius:6px;">'+it.qtd+'</span></td>';
-        h+='<td style="text-align:right;padding:10px 8px;font-size:13px;opacity:.65;">'+it.unit+'</td>';
-        h+='<td style="text-align:right;padding:10px 0;font-size:14px;font-weight:700;color:var(--primary);">'+it.total+'</td>';
-        h+='</tr>';
+        h+='<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.07);">';
+        h+='<div><div style="font-size:13px;font-weight:500;">'+it.nome+' <span style="opacity:.5;font-weight:400;">×'+it.qtd+'</span></div>';
+        h+='<div style="font-size:11px;opacity:.4;margin-top:2px;">'+it.un+' · R$ '+fmtNum(it.unit)+'</div></div>';
+        h+='<div style="font-size:14px;font-weight:700;color:var(--primary);">'+fmtMoeda(it.total)+'</div>';
+        h+='</div>';
       });
     }else{
-      h+='<tr><td colspan="4" style="text-align:center;padding:28px 0;opacity:.25;font-style:italic;font-size:13px;">Adicione produtos no formulário</td></tr>';
+      h+='<div style="text-align:center;padding:28px 0;opacity:.25;font-style:italic;font-size:13px;">Adicione produtos no formulário</div>';
     }
-    h+='</tbody></table>';
+    h+='</div>';
   }
   h+='<div style="border-top:1px solid var(--border);padding-top:12px;margin-bottom:20px;">';
   if(desconto&&parseFloat(desconto)>0)h+='<div style="display:flex;justify-content:space-between;padding:5px 0;font-size:13px;"><span style="opacity:.6;">Subtotal</span><span>—</span></div><div style="display:flex;justify-content:space-between;padding:5px 0;font-size:13px;"><span style="color:#f59e0b;">Desconto '+desconto+'%</span><span style="color:#f59e0b;">− —</span></div>';
