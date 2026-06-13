@@ -2198,9 +2198,10 @@ function verPedido(id){
   var desconto=parseFloat(ped.desconto||0);
   var freteLabel=freteTipo==='cif'?'CIF — Incluso':freteTipo==='fob'?'FOB (R$ '+fmtNum(freteValor)+')':'Sem frete';
   var descarga=ped.descarga==='cliente'?'Pelo Cliente':ped.descarga==='representante'?'Pela Transportadora':'Não informado';
-  var subtotal=ped.itens.reduce(function(s,i){return s+i.total;},0);
+  var _itens=ped.itens||[];
+  var subtotal=_itens.reduce(function(s,i){return s+i.total;},0);
   var totalFinal=desconto>0?subtotal*(1-desconto/100):subtotal;
-  var rows=ped.itens.map(function(it,i){
+  var rows=_itens.map(function(it,i){
     var prod=produtos.find(function(p){return p.id===it.produtoId;})||{};
     var forn=fornecedores.find(function(f){return f.id===prod.fornecedorId;})||{};
     return '<tr style="background:'+(i%2===0?'var(--surface)':'var(--surface2)') +';border-bottom:1px solid var(--border);">'
