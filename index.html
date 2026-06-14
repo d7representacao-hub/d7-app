@@ -2170,9 +2170,11 @@ function previewPedido(){
     h+='</div>';
   }
   h+='<div style="border-top:1px solid var(--border);padding-top:12px;margin-bottom:20px;">';
-  if(desconto&&parseFloat(desconto)>0)h+='<div style="display:flex;justify-content:space-between;padding:5px 0;font-size:13px;"><span style="opacity:.6;">Subtotal</span><span>—</span></div><div style="display:flex;justify-content:space-between;padding:5px 0;font-size:13px;"><span style="color:#f59e0b;">Desconto '+desconto+'%</span><span style="color:#f59e0b;">− —</span></div>';
+  var subtotalProd=itens.reduce(function(s,it){return s+(parseFloat(it.total)||0);},0);
+  h+='<div style="display:flex;justify-content:space-between;padding:5px 0;font-size:13px;"><span style="opacity:.6;">Total Produtos</span><span>'+fmtMoeda(subtotalProd)+'</span></div>';
+  if(desconto&&parseFloat(desconto)>0){var dsVal=subtotalProd*(parseFloat(desconto)/100);h+='<div style="display:flex;justify-content:space-between;padding:5px 0;font-size:13px;"><span style="color:#f59e0b;">Desconto '+desconto+'%</span><span style="color:#f59e0b;">− '+fmtMoeda(dsVal)+'</span></div>';}
   if(freteValor&&parseFloat(freteValor)>0)h+='<div style="display:flex;justify-content:space-between;padding:5px 0;font-size:13px;"><span style="opacity:.6;">Frete '+freteTipoVal+'</span><span style="opacity:.7;">R$ '+freteValor+'</span></div>';
-  h+='<div style="display:flex;justify-content:space-between;padding:8px 0;font-size:17px;font-weight:700;"><span>Total</span><span style="color:var(--primary);">'+total+'</span></div>';
+  h+='<div style="display:flex;justify-content:space-between;padding:8px 0;font-size:17px;font-weight:700;"><span>Total Geral</span><span style="color:var(--primary);">'+total+'</span></div>';
   h+='</div>';
   var hasInfo=(ppDatas.length||pfDatas.length||prazoEnt||peso||descargaVal);
   if(hasInfo){
@@ -2188,7 +2190,8 @@ function previewPedido(){
 
       if(peso)entrega+='<div style="display:flex;justify-content:space-between;padding:6px 0;font-size:13px;border-bottom:1px solid rgba(255,255,255,.06);"><span style="opacity:.5;">Peso total</span><strong>'+peso+' kg</strong></div>';
       if(descargaVal)entrega+='<div style="display:flex;justify-content:space-between;padding:6px 0;font-size:13px;"><span style="opacity:.5;">Descarga</span><strong>'+descargaVal+'</strong></div>';
-      h+='<div>'+entrega+'</div>';
+            if(prazoEnt)entrega+='<div style="display:flex;justify-content:space-between;padding:6px 0;font-size:13px;border-bottom:1px solid rgba(255,255,255,.06);"><span style="opacity:.5;">Dias</span><strong>'+prazoEnt+' dias</strong></div>';
+h+='<div>'+entrega+'</div>';
     }
     h+='</div>';
   }
