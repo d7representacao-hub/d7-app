@@ -1377,7 +1377,7 @@ WhatsApp: [Seu Telefone]</textarea>
       <select class="form-select" id="sel-forn-pedido" onchange="filtrarProdutosPedido()" style="width:100%;margin-bottom:8px;">
         <option value="">Todos os fornecedores</option>
       </select>
-      <div id="prod-catalog" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px;max-height:160px;overflow-y:auto;margin-bottom:8px;"></div>
+      <select id="prod-catalog" class="form-select" style="width:100%;margin-bottom:8px;" onchange="selecionarProdutoPedido(this.value)"></select>
       <div style="display:flex;gap:8px;align-items:center;">
         <span id="prod-selected-nome" style="flex:1;font-size:12px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">← Selecione um produto</span>
         <input class="form-input" id="qtd-pedido" type="number" min="1" value="1" placeholder="Qtd" style="width:70px;">
@@ -2044,28 +2044,17 @@ function filtrarProdutosPedido(){
   var catalog=document.getElementById('prod-catalog');
   if(!catalog)return;
   var lista=produtos.filter(function(p){return !fornId||p.fornecedorId===fornId;});
-  catalog.innerHTML=lista.length?lista.map(function(p){
-    return '<div onclick="selecionarProdutoPedido(\''+p.id+'\')" id="pcard-'+p.id+'" style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:7px 8px;cursor:pointer;font-size:12px;">'
-      +'<div style="font-weight:600;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+p.nome+'</div>'
-      +'<div style="color:var(--text2);">'+(p.unidade||'UN')+' &middot; R$ '+(parseFloat(p.preco)||0).toFixed(2)+'</div>'
-      +'</div>';
-  }).join(''):'<div style="color:var(--text2);font-size:12px;padding:8px;">Nenhum produto cadastrado</div>';
+  catalog.innerHTML='<option value="">← Selecione um produto</option>'+lista.map(function(p){return '<option value="'+p.id+'">'+p.nome+' · '+p.un+' · R$ '+fmtNum(p.preco)+'</option>';}).join('');
   window._prodSelecionadoPedido=null;
-  var n=document.getElementById('prod-selected-nome');
-  if(n)n.textContent='← Selecione um produto';
+  catalog.value='';
 }
 
 function selecionarProdutoPedido(id){
   window._prodSelecionadoPedido=id;
   var prod=produtos.find(function(p){return p.id===id;});
   if(!prod)return;
-  document.querySelectorAll('[id^="pcard-"]').forEach(function(el){el.style.borderColor='var(--border)';el.style.background='var(--surface2)';});
-  var card=document.getElementById('pcard-'+id);
-  if(card){card.style.borderColor='var(--primary)';card.style.background='var(--surface)';}
   var n=document.getElementById('prod-selected-nome');
-  if(n)n.textContent=prod.nome+' — R$ '+(parseFloat(prod.preco)||0).toFixed(2);
-  var q=document.getElementById('qtd-pedido');
-  if(q){q.value=1;q.focus();}
+  if(n)n.textContent=prod.nome;
 }
 function adicionarItemPedido(){
   var prodId=window._prodSelecionadoPedido;
