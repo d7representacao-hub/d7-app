@@ -1355,6 +1355,10 @@ WhatsApp: [Seu Telefone]</textarea>
           <option value="">Selecione o cliente...</option>
         </select>
       </div>
+<div class="form-group" style="margin:0">
+        <label class="form-label">Desconto Geral (%)</label>
+        <input class="form-input" id="fp-desconto-pedido" type="number" min="0" max="100" placeholder="0" oninput="recalcularPedido()">
+      </div>
       <div class="form-group">
         <label class="form-label">Status</label>
         <select class="form-select" id="fp-status-pedido">
@@ -1363,10 +1367,6 @@ WhatsApp: [Seu Telefone]</textarea>
           <option value="entregue">Entregue</option>
           <option value="cancelado">Cancelado</option>
         </select>
-      </div>
-<div class="form-group" style="margin:0">
-        <label class="form-label">Desconto Geral (%)</label>
-        <input class="form-input" id="fp-desconto-pedido" type="number" min="0" max="100" placeholder="0" oninput="recalcularPedido()">
       </div>
       
 
