@@ -1374,6 +1374,15 @@ WhatsApp: [Seu Telefone]</textarea>
         <button class="btn btn-primary" onclick="adicionarItemPedido()">+ Adicionar</button>
       </div>
     </div>
+<div class="form-group" style="margin:0">
+        <label class="form-label">Status</label>
+        <select class="form-select" id="fp-status-pedido">
+          <option value="aberto">Aberto</option>
+          <option value="enviado">Enviado</option>
+          <option value="entregue">Entregue</option>
+          <option value="cancelado">Cancelado</option>
+        </select>
+      </div>
 <div class="form-group full" style="border:1px solid var(--border);border-radius:10px;padding:16px;margin-top:8px;">
         <label class="form-label" style="font-weight:700;color:var(--primary);margin-bottom:10px;">&#x1F69A; Frete</label>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;margin-bottom:10px;">
@@ -1448,16 +1457,7 @@ WhatsApp: [Seu Telefone]</textarea>
     <div id="modal-ped-preview-area">
       
           <div style="padding:10px 16px;background:var(--surface2);border-bottom:1px solid var(--border);display:grid;grid-template-columns:1fr 1fr;gap:10px;flex-shrink:0;">
-          <div class="form-group" style="margin:0">
-        <label class="form-label">Status</label>
-        <select class="form-select" id="fp-status-pedido">
-          <option value="aberto">Aberto</option>
-          <option value="enviado">Enviado</option>
-          <option value="entregue">Entregue</option>
-          <option value="cancelado">Cancelado</option>
-        </select>
-      </div>
-      
+                
       <div class="form-group" style="margin:0">
         <label class="form-label">Observações</label>
         <input class="form-input" id="fp-obs-pedido" placeholder="Observações do pedido">
@@ -1469,16 +1469,7 @@ WhatsApp: [Seu Telefone]</textarea>
   </div>
 </div>
 </div>
-✅      <div class="form-group">
-        <label class="form-label">Status</label>
-        <select class="form-select" id="fp-status-pedido">
-          <option value="aberto">Aberto</option>
-          <option value="enviado">Enviado</option>
-          <option value="entregue">Entregue</option>
-          <option value="cancelado">Cancelado</option>
-        </select>
-      </div>
-<!-- MODAL VER PEDIDO -->
+✅      <!-- MODAL VER PEDIDO -->
 <div class="overlay" id="modal-ver-pedido">
   <div class="modal modal-lg">
     <div style="display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);padding-bottom:12px;margin-bottom:12px;">
