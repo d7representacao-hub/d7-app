@@ -2080,6 +2080,7 @@ function renderItensPedido(){
       +'</div>';
   }).join('');
   recalcularPedido();
+  previewPedido();
 }
 function updateItemPedido(idx,field,val){
   itensPedido[idx][field]=parseFloat(val)||0;
@@ -2093,6 +2094,7 @@ function recalcularPedido(){
   var total=sub*(1-desc/100);
   document.getElementById('pedido-desconto-display').textContent=desc+'%';
   document.getElementById('pedido-total-value').textContent=fmtMoeda(total);
+  previewPedido();
 }
 // ===== PARCELAS DINAMICAS - CONCLUIDO - NAO MODIFICAR =====
 function atualizarParcelas(tipo,qtd){
