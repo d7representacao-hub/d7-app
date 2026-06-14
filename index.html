@@ -143,8 +143,8 @@ tr:hover td { background: var(--surface2); }
     .modal-close-ped { background:none; border:none; color:rgba(255,255,255,.7); font-size:20px; cursor:pointer; padding:4px 10px; line-height:1; flex-shrink:0; }
     .modal-close-ped:hover { color:#fff; }
     #modal-ped-body { flex:1; display:flex; overflow:hidden; }
-    #modal-ped-form-bar { flex:0 0 55%; min-width:430px; overflow-y:auto; padding:20px; background:var(--surface); border-right:2px solid var(--border); }
-    #modal-ped-preview-area { flex:1; overflow-y:auto; background:rgba(0,0,0,.2); padding:24px; display:flex; justify-content:center; }
+    #modal-ped-form-bar { flex:0 0 42%; min-width:360px; overflow-y:auto; padding:20px; background:var(--surface); border-right:2px solid var(--border); }
+    #modal-ped-preview-area { flex:1; overflow:hidden; background:rgba(0,0,0,.2); padding:0; display:flex; flex-direction:column; align-items:stretch; }
     #pedido-live-preview { background:var(--surface); border-radius:10px; padding:28px 32px; max-width:100%; width:100%; box-shadow:0 4px 32px rgba(0,0,0,.5); }
 .modal-lg { width: 860px; }
 @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:none} }
@@ -1355,23 +1355,7 @@ WhatsApp: [Seu Telefone]</textarea>
           <option value="">Selecione o cliente...</option>
         </select>
       </div>
-      <div class="form-group">
-        <label class="form-label">Status</label>
-        <select class="form-select" id="fp-status-pedido">
-          <option value="aberto">Aberto</option>
-          <option value="enviado">Enviado</option>
-          <option value="entregue">Entregue</option>
-          <option value="cancelado">Cancelado</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Desconto Geral (%)</label>
-        <input class="form-input" id="fp-desconto-pedido" type="number" min="0" max="100" placeholder="0" oninput="recalcularPedido()">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Observações</label>
-        <input class="form-input" id="fp-obs-pedido" placeholder="Observações do pedido">
-      </div>
+      
 
       <div style="margin-bottom:10px;">
           <div style="margin-top:12px;border-top:1px solid var(--border);padding-top:12px;">
@@ -1458,8 +1442,29 @@ WhatsApp: [Seu Telefone]</textarea>
     </div>
     </div>
     <div id="modal-ped-preview-area">
-      <div id="pedido-live-preview"><p style="text-align:center;opacity:.3;padding:60px 0;font-size:14px;">Preencha os dados acima para ver o preview do pedido</p></div>
+      
+          <div style="padding:10px 16px;background:var(--surface2);border-bottom:1px solid var(--border);display:grid;grid-template-columns:1fr 1fr;gap:10px;flex-shrink:0;">
+          <div class="form-group" style="margin:0">
+        <label class="form-label">Status</label>
+        <select class="form-select" id="fp-status-pedido">
+          <option value="aberto">Aberto</option>
+          <option value="enviado">Enviado</option>
+          <option value="entregue">Entregue</option>
+          <option value="cancelado">Cancelado</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Desconto Geral (%)</label>
+        <input class="form-input" id="fp-desconto-pedido" type="number" min="0" max="100" placeholder="0" oninput="recalcularPedido()">
+      </div>
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Observações</label>
+        <input class="form-input" id="fp-obs-pedido" placeholder="Observações do pedido">
+      </div>
+          </div>
+          <div style="flex:1;overflow-y:auto;padding:24px;display:flex;justify-content:center;"><div id="pedido-live-preview"><p style="text-align:center;opacity:.3;padding:60px 0;font-size:14px;">Preencha os dados acima para ver o preview do pedido</p></div>
     </div>
+          </div>
   </div>
 </div>
 </div>
