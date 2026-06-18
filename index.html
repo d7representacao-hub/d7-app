@@ -2104,33 +2104,39 @@ function adicionarItemPedido(){
 }
 function renderItensPedido(){
   var body=document.getElementById('pedido-items-body');
+  var wrap=document.getElementById('pedido-items-wrap');
+  var totalBar=document.querySelector('.pedido-total');
   if(!itensPedido.length){
     body.innerHTML='<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px;">Nenhum item adicionado</div>';
+    if(wrap)wrap.style.display='none';
+    if(totalBar)totalBar.style.display='none';
     document.getElementById('pedido-desconto-display').textContent='0%';
     document.getElementById('pedido-total-value').textContent='R$ 0,00';
     document.getElementById('pedido-peso-total').textContent='0,000 kg';return;
   }
-  var grid='display:grid;grid-template-columns:1fr 48px 82px 90px 82px 32px;align-items:center;gap:6px;';
-  body.innerHTML='<div class="pedido-item-row pedido-item-header" style="'+grid+'">'
-    +'<span>Produto</span>'
-    +'<span style="text-align:center;">Qtd</span>'
-    +'<span style="text-align:right;">Unit.</span>'
-    +'<span style="text-align:right;">Peso (kg)</span>'
-    +'<span style="text-align:right;">Total</span>'
-    +'<span></span>'
-    +'</div>'
+  if(wrap)wrap.style.display='block';
+  if(totalBar)totalBar.style.display='flex';
+  var cols='1fr 48px 82px 90px 82px 32px';
+  var hs='background:var(--surface2);font-size:11px;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:.4px;padding:8px 6px;border-bottom:2px solid var(--border);';
+  var cs='padding:8px 6px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle;';
+  body.innerHTML='<div style="display:grid;grid-template-columns:'+cols+';">'
+    +'<div style="'+hs+'">Produto</div>'
+    +'<div style="'+hs+'text-align:center;">Qtd</div>'
+    +'<div style="'+hs+'text-align:right;">Unit.</div>'
+    +'<div style="'+hs+'text-align:right;">Peso (kg)</div>'
+    +'<div style="'+hs+'text-align:right;">Total</div>'
+    +'<div style="'+hs+'"></div>'
     +itensPedido.map(function(it,idx){
       var pesoUn=it.peso_kg?it.peso_kg.toFixed(3)+'kg':'—';
       var pesoTot=it.peso_kg?(it.qtd*it.peso_kg).toFixed(3)+'kg':'—';
-      return '<div class="pedido-item-row" style="'+grid+'">'
-        +'<div><strong style="font-size:13px;">'+esc(it.nome)+'</strong><br><small style="color:var(--text2,#888);font-size:11px;">'+esc(it.unidade)+(it.emb?' · '+esc(it.emb):'')+'</small></div>'
-        +'<div style="text-align:center;font-size:13px;">'+it.qtd+'</div>'
-        +'<div style="text-align:right;font-size:13px;">R$ '+fmtNum(it.preco)+'</div>'
-        +'<div style="text-align:right;font-size:12px;line-height:1.4;">'+pesoUn+'<br><small style="color:var(--text2);">'+pesoTot+'</small></div>'
-        +'<div style="text-align:right;font-size:13px;font-weight:600;">'+fmtMoeda(it.total)+'</div>'
-        +'<button class="btn btn-ghost btn-sm" onclick="removeItemPedido('+idx+')" style="color:var(--danger);padding:2px 4px;" title="Remover">&#x1F5D1;</button>'
-        +'</div>';
-    }).join('');
+      return '<div style="'+cs+'"><strong>'+esc(it.nome)+'</strong><br><small style="color:var(--text2);font-size:11px;">'+esc(it.unidade)+(it.emb?' · '+esc(it.emb):'')+'</small></div>'
+        +'<div style="'+cs+'text-align:center;">'+it.qtd+'</div>'
+        +'<div style="'+cs+'text-align:right;">R$ '+fmtNum(it.preco)+'</div>'
+        +'<div style="'+cs+'text-align:right;font-size:12px;line-height:1.5;">'+pesoUn+'<br><small style="color:var(--text2);">'+pesoTot+'</small></div>'
+        +'<div style="'+cs+'text-align:right;font-weight:600;">'+fmtMoeda(it.total)+'</div>'
+        +'<div style="'+cs+'text-align:center;"><button class="btn btn-ghost btn-sm" onclick="removeItemPedido('+idx+')" style="color:var(--danger);padding:2px 4px;" title="Remover">&#x1F5D1;</button></div>';
+    }).join('')
+    +'</div>';
   recalcularPedido();
   previewPedido();
 }
