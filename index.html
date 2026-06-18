@@ -401,6 +401,10 @@ input:checked+.toggle-slider:before{transform:translateX(18px);}
         <span class="icon">💰</span> Tabelas de Preços
       </div>
       <div class="sidebar-section">Vendas</div>
+      <div class="nav-item" data-panel="representacoes" onclick="navigate('representacoes')">
+        <span class="icon">🏢</span> Representações
+        <span class="badge" id="badge-representacoes">0</span>
+      </div>
       <div class="nav-item" data-panel="prospeccao" onclick="navigate('prospeccao')">
         <span class="icon">🔍</span> Prospecção
       </div>
@@ -609,6 +613,11 @@ input:checked+.toggle-slider:before{transform:translateX(18px);}
       <!-- FUNIL -->
       <!-- PROSPECÇÃO -->
       <div class="panel" id="panel-prospeccao">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;padding:10px 14px;background:var(--surface);border-radius:8px;border:1px solid var(--border);">
+          <span style="font-size:11px;color:var(--text2);white-space:nowrap;text-transform:uppercase;letter-spacing:.5px;">Representação</span>
+          <select class="form-select" id="sel-rep-prospeccao" style="flex:1;max-width:340px;font-size:13px;" onchange="trocarRep(this.value,'prospeccao')"></select>
+          <button class="btn btn-outline btn-sm" onclick="navigate('representacoes')" style="white-space:nowrap;font-size:11px;">⚙ Gerenciar</button>
+        </div>
         <div class="card" style="margin-bottom:16px;">
           <div class="card-header"><span class="card-title">🔍 Buscar Prospects</span></div>
           <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;">
@@ -664,12 +673,11 @@ input:checked+.toggle-slider:before{transform:translateX(18px);}
             <button class="btn btn-primary" onclick="capturarProspect()">+ Capturar Prospect</button>
           </div>
         </div>
-      </div>
         <!-- META 80 DISTRIBUIDORES -->
         <div class="card" style="margin-bottom:16px;border:1px solid var(--accent);">
           <div class="card-header" style="justify-content:space-between;">
-            <span class="card-title">🏆 Meta: 80 Novos Distribuidores</span>
-            <span style="font-size:12px;color:var(--muted);" id="prosp-meta-label">0 / 80</span>
+            <span class="card-title">🏆 Meta: 40 Novas Indústrias e Distribuidores</span>
+            <span style="font-size:12px;color:var(--muted);" id="prosp-meta-label">0 / 40</span>
           </div>
           <div style="background:var(--surface2);border-radius:8px;height:12px;overflow:hidden;margin-bottom:8px;">
             <div id="prosp-meta-bar" style="height:100%;background:linear-gradient(90deg,var(--accent),#10b981);border-radius:8px;transition:width .5s;width:0%"></div>
@@ -843,12 +851,29 @@ WhatsApp: [Seu Telefone]</textarea>
       <!-- /PROSPECÇÃO -->
 
       <div class="panel" id="panel-funil">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;padding:10px 14px;background:var(--surface);border-radius:8px;border:1px solid var(--border);">
+          <span style="font-size:11px;color:var(--text2);white-space:nowrap;text-transform:uppercase;letter-spacing:.5px;">Representação</span>
+          <select class="form-select" id="sel-rep-funil" style="flex:1;max-width:340px;font-size:13px;" onchange="trocarRep(this.value,'funil')"></select>
+          <button class="btn btn-outline btn-sm" onclick="navigate('representacoes')" style="white-space:nowrap;font-size:11px;">⚙ Gerenciar</button>
+        </div>
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
           <div><div style="font-size:15px;font-weight:700;">Funil de Vendas</div>
           <div style="font-size:12px;color:var(--text2);margin-top:2px;" id="funil-total-label">0 prospects</div></div>
           <button class="btn btn-primary" onclick="abrirModalFunil()">+ Novo Prospect</button>
         </div>
         <div class="funil-board" id="funil-board"></div>
+      </div>
+
+      <!-- REPRESENTAÇÕES -->
+      <div class="panel" id="panel-representacoes">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+          <div>
+            <div style="font-size:15px;font-weight:700;">🏢 Representações</div>
+            <div style="font-size:12px;color:var(--text2);margin-top:2px;">Empresas que você representa — cada uma com catálogo, prospects e funil isolados</div>
+          </div>
+          <button class="btn btn-primary" onclick="abrirModalRep()">+ Nova Representação</button>
+        </div>
+        <div id="reps-lista"></div>
       </div>
 
       <!-- AGENDA -->
@@ -1584,6 +1609,28 @@ WhatsApp: [Seu Telefone]</textarea>
   </div>
 </div>
 
+<!-- MODAL REPRESENTAÇÃO -->
+<div class="overlay" id="modal-rep">
+  <div class="modal" style="max-width:440px;">
+    <button class="modal-close" onclick="fecharModal('modal-rep')">✕</button>
+    <div class="modal-title">🏢 <span id="modal-rep-title">Nova Representação</span></div>
+    <div class="form-grid">
+      <div class="form-group full"><label class="form-label">Nome da Empresa *</label><input class="form-input" id="rep-nome" placeholder="Ex: Sal Nota 10, Doces Brasil..."></div>
+      <div class="form-group"><label class="form-label">Segmento</label><input class="form-input" id="rep-segmento" placeholder="Ex: Alimentos, Têxtil, Cosméticos"></div>
+      <div class="form-group"><label class="form-label">Público</label>
+        <select class="form-select" id="rep-publico">
+          <option value="B2B">B2B (empresas)</option>
+          <option value="B2C">B2C (consumidor final)</option>
+          <option value="B2B/B2C">B2B / B2C (ambos)</option>
+        </select></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="fecharModal('modal-rep')">Cancelar</button>
+      <button class="btn btn-green" onclick="salvarRep()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL FUNIL -->
 <div class="overlay" id="modal-funil">
   <div class="modal" style="max-width:420px;">
@@ -1595,8 +1642,8 @@ WhatsApp: [Seu Telefone]</textarea>
       <div class="form-group"><label class="form-label">Cidade / UF</label><input class="form-input" id="fn-cidade" placeholder="Cidade / UF"></div>
       <div class="form-group"><label class="form-label">Etapa</label>
         <select class="form-select" id="fn-etapa">
-          <option value="prospeccao">Prospecção</option><option value="contato">Contato Feito</option>
-          <option value="apresentacao">Apresentação</option><option value="proposta">Proposta</option><option value="fechamento">Fechamento</option>
+          <option value="mapeado">Mapeado</option><option value="abordado">Abordado</option>
+          <option value="proposta">Proposta</option><option value="fechado">Fechado</option>
         </select></div>
       <div class="form-group"><label class="form-label">Origem</label><input class="form-input" id="fn-origem" placeholder="Ex: indicação, visita"></div>
       <div class="form-group full"><label class="form-label">Observações</label><textarea class="form-textarea" id="fn-obs" placeholder="Notas..."></textarea></div>
@@ -1668,11 +1715,36 @@ WhatsApp: [Seu Telefone]</textarea>
     alert('Dados restaurados com sucesso!');
   }
 })();
+// ── REPRESENTAÇÕES (bootstrap) ──
+var KEY_REPS='d7_representacoes', KEY_REP_ATIVA='d7_rep_ativa';
+var representacoes=JSON.parse(localStorage.getItem(KEY_REPS)||'[]');
+var repAtiva=localStorage.getItem(KEY_REP_ATIVA)||null;
+(function(){
+  if(representacoes.length===0){
+    var defId='rep_default';
+    representacoes=[{id:defId,nome:'D7 Representação',segmento:'Geral',publico:'B2B',criadoEm:new Date().toISOString()}];
+    localStorage.setItem(KEY_REPS,JSON.stringify(representacoes));
+    ['funil','prospectos','produtos'].forEach(function(k){
+      var old=localStorage.getItem('d7_'+k);
+      if(old)localStorage.setItem('d7_'+defId+'_'+k,old);
+    });
+  }
+  if(!repAtiva||!representacoes.find(function(r){return r.id===repAtiva;})){
+    repAtiva=representacoes[0].id;
+    localStorage.setItem(KEY_REP_ATIVA,repAtiva);
+  }
+})();
+function repPrefix(){return 'd7_'+repAtiva+'_';}
+function saveReps(){localStorage.setItem(KEY_REPS,JSON.stringify(representacoes));}
+function getKeyP(){return repPrefix()+'produtos';}
+function getKeyFun(){return repPrefix()+'funil';}
+function getKeyProsp(){return repPrefix()+'prospectos';}
+
 // ── STORAGE ──
-var KEY_C='d7_clientes', KEY_F='d7_fornecedores', KEY_P='d7_produtos', KEY_PED='d7_pedidos';
+var KEY_C='d7_clientes', KEY_F='d7_fornecedores', KEY_PED='d7_pedidos';
 var clientes=JSON.parse(localStorage.getItem(KEY_C)||'[]');
 var fornecedores=JSON.parse(localStorage.getItem(KEY_F)||'[]');
-var produtos=JSON.parse(localStorage.getItem(KEY_P)||'[]');
+var produtos=JSON.parse(localStorage.getItem(getKeyP())||'[]');
 var pedidos=JSON.parse(localStorage.getItem(KEY_PED)||'[]');
 var editClienteId=null, editFornId=null, editProdId=null, editPedidoId=null;
 var painelAtual='dashboard';
@@ -1682,7 +1754,7 @@ var pedidoIdVer=null;
 
 function saveC(){localStorage.setItem(KEY_C,JSON.stringify(clientes));}
 function saveF(){localStorage.setItem(KEY_F,JSON.stringify(fornecedores));}
-function saveP(){localStorage.setItem(KEY_P,JSON.stringify(produtos));}
+function saveP(){localStorage.setItem(getKeyP(),JSON.stringify(produtos));}
 function savePed(){localStorage.setItem(KEY_PED,JSON.stringify(pedidos));}
 
 // ── NAVEGAÇÃO ──
@@ -1839,20 +1911,22 @@ function navigate(panel){
   document.querySelector('[data-panel="'+panel+'"]').classList.add('active');
   document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');});
   document.getElementById('panel-'+panel).classList.add('active');
-  var titles={dashboard:'Dashboard',clientes:'Clientes',pedidos:'Pedidos',catalogo:'Catálogo de Produtos',tabelas:'Tabelas de Preços',ai:'D7X — IA'};
-  document.getElementById('topbar-title').textContent=titles[panel];
+  var titles={dashboard:'Dashboard',clientes:'Clientes',pedidos:'Pedidos',catalogo:'Catálogo de Produtos',tabelas:'Tabelas de Preços',ai:'D7X — IA',representacoes:'Representações',prospeccao:'Prospecção',funil:'Funil de Vendas'};
+  document.getElementById('topbar-title').textContent=titles[panel]||panel;
   var btn=document.getElementById('btn-acao');
   if(panel==='clientes'){btn.textContent='+ Novo Cliente';btn.style.display='';}
   else if(panel==='pedidos'){btn.textContent='+ Novo Pedido';btn.style.display='';}
   else if(panel==='catalogo'){btn.textContent='+ Ações';btn.style.display='';}
-  else if(panel==='tabelas'){btn.style.display='none';}
-  else if(panel==='ai'){btn.style.display='none';}
-  else{btn.textContent='+ Novo Cliente';btn.style.display='';}
+  else if(panel==='representacoes'){btn.textContent='+ Nova Representação';btn.style.display='';btn.onclick=function(){abrirModalRep();};}
+  else if(panel==='tabelas'||panel==='ai'){btn.style.display='none';}
+  else{btn.textContent='+ Novo Cliente';btn.style.display='';btn.onclick=function(){abrirModalCliente();};}
   if(panel==='clientes') renderClientes();
   if(panel==='dashboard') renderDashboard();
   if(panel==='catalogo') renderCatalogo();
   if(panel==='pedidos') renderPedidos();
   if(panel==='tabelas') renderTabelas();
+  if(panel==='representacoes') renderRepresentacoes();
+  if(panel==='prospeccao'||panel==='funil'){renderRepSeletores();if(panel==='funil')renderFunil();}
 }
 
 function acaoPrincipal(){
@@ -2559,16 +2633,127 @@ function salvarHistorico(){
   toast('Registro salvo!','success');
 }
 
+// ── REPRESENTAÇÕES ──
+function renderRepresentacoes(){
+  var el=document.getElementById('reps-lista');
+  if(!el)return;
+  var badge=document.getElementById('badge-representacoes');
+  if(badge)badge.textContent=representacoes.length;
+  if(representacoes.length===0){
+    el.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted);font-size:13px;">Nenhuma representação cadastrada.<br>Clique em <strong>+ Nova Representação</strong> para começar.</div>';
+    return;
+  }
+  el.innerHTML=representacoes.map(function(r){
+    var isAtiva=r.id===repAtiva;
+    var funilCount=JSON.parse(localStorage.getItem('d7_'+r.id+'_funil')||'[]').length;
+    var prospCount=JSON.parse(localStorage.getItem('d7_'+r.id+'_prospectos')||'[]').length;
+    var prodCount=JSON.parse(localStorage.getItem('d7_'+r.id+'_produtos')||'[]').length;
+    return '<div style="display:flex;align-items:center;gap:12px;padding:16px;border-radius:10px;margin-bottom:10px;background:var(--surface);border:1.5px solid '+(isAtiva?'var(--primary)':'var(--border)')+';">'
+      +'<div style="flex:1;min-width:0;">'
+      +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">'
+      +'<span style="font-size:14px;font-weight:700;color:var(--text);">'+esc(r.nome)+'</span>'
+      +(isAtiva?'<span style="font-size:10px;padding:2px 7px;background:var(--primary);color:#fff;border-radius:20px;">ATIVA</span>':'')
+      +'</div>'
+      +'<div style="font-size:12px;color:var(--text2);">'+(r.segmento||'Sem segmento')+' · <span style="color:var(--accent);font-weight:600;">'+r.publico+'</span></div>'
+      +'<div style="display:flex;gap:12px;margin-top:8px;">'
+      +'<span style="font-size:11px;color:var(--muted);">📦 '+prodCount+' produtos</span>'
+      +'<span style="font-size:11px;color:var(--muted);">🔻 '+funilCount+' no funil</span>'
+      +'<span style="font-size:11px;color:var(--muted);">🔍 '+prospCount+' prospects</span>'
+      +'</div>'
+      +'</div>'
+      +'<div style="display:flex;gap:6px;align-items:center;flex-shrink:0;">'
+      +(!isAtiva?'<button class="btn btn-primary btn-sm" onclick="trocarRep(\''+r.id+'\',\'rep\')">Ativar</button>':'')
+      +'<button class="btn btn-ghost btn-sm" onclick="editarRep(\''+r.id+'\')" title="Editar">✏️</button>'
+      +(representacoes.length>1?'<button class="btn btn-ghost btn-sm" onclick="deletarRep(\''+r.id+'\')" style="color:var(--danger)" title="Excluir">🗑</button>':'')
+      +'</div>'
+      +'</div>';
+  }).join('');
+}
+
+function renderRepSeletores(){
+  ['prospeccao','funil'].forEach(function(panel){
+    var el=document.getElementById('sel-rep-'+panel);
+    if(!el)return;
+    el.innerHTML=representacoes.map(function(r){
+      return '<option value="'+r.id+'"'+(r.id===repAtiva?' selected':'')+'>'+esc(r.nome)+(r.segmento?' — '+esc(r.segmento):'')+'</option>';
+    }).join('');
+  });
+}
+
+function trocarRep(id,origem){
+  if(id===repAtiva)return;
+  repAtiva=id;
+  localStorage.setItem(KEY_REP_ATIVA,id);
+  funil=JSON.parse(localStorage.getItem(getKeyFun())||'[]');
+  prospectos=JSON.parse(localStorage.getItem(getKeyProsp())||'[]');
+  produtos=JSON.parse(localStorage.getItem(getKeyP())||'[]');
+  renderRepSeletores();
+  renderFunil();
+  atualizarMetaDistribuidores();
+  renderCatalogo();
+  var bc=document.getElementById('badge-catalogo');if(bc)bc.textContent=produtos.length;
+  if(origem==='rep')renderRepresentacoes();
+  toast('Representação ativa: '+getNomeRep(id),'success');
+}
+
+function getNomeRep(id){
+  var r=representacoes.find(function(x){return x.id===id;});
+  return r?r.nome:'—';
+}
+
+function abrirModalRep(id){
+  var r=id?representacoes.find(function(x){return x.id===id;}):null;
+  document.getElementById('modal-rep-title').textContent=r?'Editar Representação':'Nova Representação';
+  document.getElementById('rep-nome').value=r?r.nome:'';
+  document.getElementById('rep-segmento').value=r?r.segmento:'';
+  document.getElementById('rep-publico').value=r?(r.publico||'B2B'):'B2B';
+  document.getElementById('modal-rep').dataset.editId=id||'';
+  document.getElementById('modal-rep').classList.add('open');
+}
+
+function editarRep(id){abrirModalRep(id);}
+
+function salvarRep(){
+  var nome=(document.getElementById('rep-nome').value||'').trim();
+  if(!nome){toast('Nome é obrigatório','error');return;}
+  var editId=document.getElementById('modal-rep').dataset.editId;
+  if(editId){
+    var idx=representacoes.findIndex(function(r){return r.id===editId;});
+    if(idx>=0)representacoes[idx]=Object.assign({},representacoes[idx],{nome:nome,segmento:document.getElementById('rep-segmento').value,publico:document.getElementById('rep-publico').value});
+  } else {
+    var newId='rep_'+uid();
+    representacoes.push({id:newId,nome:nome,segmento:document.getElementById('rep-segmento').value,publico:document.getElementById('rep-publico').value,criadoEm:new Date().toISOString()});
+    if(representacoes.length===1){repAtiva=newId;localStorage.setItem(KEY_REP_ATIVA,newId);}
+  }
+  saveReps();
+  renderRepresentacoes();
+  renderRepSeletores();
+  var badge=document.getElementById('badge-representacoes');
+  if(badge)badge.textContent=representacoes.length;
+  fecharModal('modal-rep');
+  toast('Representação salva!','success');
+}
+
+function deletarRep(id){
+  if(representacoes.length<=1){toast('Não é possível excluir a única representação','error');return;}
+  var r=representacoes.find(function(x){return x.id===id;});
+  if(!confirm('Excluir a representação "'+((r&&r.nome)||id)+'"?\n\nOs dados de produtos, funil e prospects desta representação serão apagados permanentemente.'))return;
+  ['produtos','funil','prospectos'].forEach(function(k){localStorage.removeItem('d7_'+id+'_'+k);});
+  representacoes=representacoes.filter(function(r){return r.id!==id;});
+  saveReps();
+  if(repAtiva===id)trocarRep(representacoes[0].id,'delete');
+  else{renderRepresentacoes();renderRepSeletores();}
+  toast('Representação excluída','success');
+}
+
 // ── FUNIL ──
-var KEY_FUN='d7_funil';
-var funil=JSON.parse(localStorage.getItem(KEY_FUN)||'[]');
-function saveFunil(){localStorage.setItem(KEY_FUN,JSON.stringify(funil));}
+var funil=JSON.parse(localStorage.getItem(getKeyFun())||'[]');
+function saveFunil(){localStorage.setItem(getKeyFun(),JSON.stringify(funil));}
 var ETAPAS=[
-  {id:'prospeccao',label:'Prospecção',cor:'#7c3aed'},
-  {id:'contato',label:'Contato Feito',cor:'#3b82f6'},
-  {id:'apresentacao',label:'Apresentação',cor:'#f59e0b'},
-  {id:'proposta',label:'Proposta',cor:'#ef4444'},
-  {id:'fechamento',label:'Fechamento',cor:'#25D366'}
+  {id:'mapeado',label:'Mapeado',cor:'#7c3aed'},
+  {id:'abordado',label:'Abordado',cor:'#3b82f6'},
+  {id:'proposta',label:'Proposta',cor:'#f59e0b'},
+  {id:'fechado',label:'Fechado',cor:'#25D366'}
 ];
 function renderFunil(){
   var total=funil.length;
@@ -2579,7 +2764,7 @@ function renderFunil(){
     return '<div class="funil-col" id="col-'+et.id+'" ondragover="event.preventDefault()" ondrop="dropCard(event,\''+et.id+'\')">'
       +'<div class="funil-col-header"><span class="funil-col-title" style="color:'+et.cor+'">'+et.label+'</span><span class="funil-col-count">'+cards.length+'</span></div>'
       +'<div class="funil-cards" id="cards-'+et.id+'">'
-      +cards.map(function(p){
+      +(cards.length===0?'<div style="text-align:center;padding:24px 12px;color:var(--muted);font-size:12px;">Nenhum prospect</div>':cards.map(function(p){
         return '<div class="funil-card" draggable="true" id="fcard-'+p.id+'" ondragstart="dragCard(event,\''+p.id+'\')">'
           +'<div class="funil-card-name">'+esc(p.nome)+'</div>'
           +'<div class="funil-card-info">'+(p.cidade||'')+(p.origem?' · '+esc(p.origem):'')+'</div>'
@@ -2591,7 +2776,7 @@ function renderFunil(){
           +'<button class="btn btn-ghost btn-sm" onclick="editarFunil(\''+p.id+'\')">✏️</button>'
           +'<button class="btn btn-ghost btn-sm" onclick="deletarFunil(\''+p.id+'\')" style="color:var(--danger)">🗑</button>'
           +'</div></div></div>';
-      }).join('')
+      }).join(''))
       +'</div>'
       +'<div class="funil-add"><button class="btn btn-ghost btn-sm" style="width:100%;font-size:12px" onclick="novoFunil(\''+et.id+'\')">+ Adicionar</button></div>'
       +'</div>';
@@ -2614,7 +2799,7 @@ function dropCard(e,novaEtapa){
 function novoFunil(etapa){
   document.getElementById('modal-funil-title').textContent='Novo Prospect';
   document.getElementById('fn-nome').value='';document.getElementById('fn-tel').value='';
-  document.getElementById('fn-cidade').value='';document.getElementById('fn-etapa').value=etapa||'prospeccao';
+  document.getElementById('fn-cidade').value='';document.getElementById('fn-etapa').value=etapa||'mapeado';
   document.getElementById('fn-origem').value='';document.getElementById('fn-obs').value='';
   document.getElementById('modal-funil').dataset.editId='';
   document.getElementById('modal-funil').classList.add('open');
@@ -2838,12 +3023,11 @@ function buscarGoogle(){window.open('https://www.google.com/search?q='+encodeURI
 function buscarInstagram(){window.open('https://www.instagram.com/explore/search/keyword/?q='+encodeURIComponent(document.getElementById('search-prospeccao').value||''),'_blank');}
 
 // ── PROSPECÇÃO PROFISSIONAL ──
-var KEY_PROSP='d7_prospectos';
-var prospectos=JSON.parse(localStorage.getItem(KEY_PROSP)||'[]');
-function saveProspectos(){localStorage.setItem(KEY_PROSP,JSON.stringify(prospectos));}
+var prospectos=JSON.parse(localStorage.getItem(getKeyProsp())||'[]');
+function saveProspectos(){localStorage.setItem(getKeyProsp(),JSON.stringify(prospectos));}
 
 function atualizarMetaDistribuidores(){
-  var meta=80;
+  var meta=40;
   var fechados=prospectos.filter(function(p){return p.status==='distribuidor';}).length;
   // também conta clients com origem prospecção
   var clientesFechados=clientes.filter(function(c){return c.status==='ativo'&&c.origem_prosp;}).length;
@@ -3287,7 +3471,7 @@ function restaurarJSON(input){
 function limparDados(){
   if(!confirm('⚠️ ATENÇÃO: Isso apagará TODOS os dados. Tem certeza?'))return;
   if(!confirm('Confirmar exclusão total?'))return;
-  [KEY_C,KEY_F,'d7_produtos',KEY_PED,KEY_FUN,KEY_AG,KEY_HIST_OBJ,'d7_tarefas_auto','d7_automacoes'].forEach(function(k){localStorage.removeItem(k);});
+  [KEY_C,KEY_F,getKeyP(),KEY_PED,getKeyFun(),KEY_AG,KEY_HIST_OBJ,'d7_tarefas_auto','d7_automacoes'].forEach(function(k){localStorage.removeItem(k);});
   clientes=[];fornecedores=[];produtos=[];pedidos=[];funil=[];agenda=[];tarefasAuto=[];automacoes=defaultAutomacoes();
   renderDashboard();toast('Dados apagados','success');
 }
@@ -3376,13 +3560,16 @@ function initApp(){
   navigate('dashboard');
   loadConfig();
   renderDashboard();
-  renderClientes()
+  renderClientes();
   renderPedidos();
   renderFornecedores();
   renderCatalogo();
   renderTabelas();
   renderAgenda();
   renderMetas();
+  renderRepSeletores();
+  var badge=document.getElementById('badge-representacoes');
+  if(badge)badge.textContent=representacoes.length;
 }
 initApp();
 </script>
