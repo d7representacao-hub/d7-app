@@ -220,6 +220,7 @@ tr:hover td { background: var(--surface2); }
 
 /* DARK/LIGHT MODE */
 body.light { --bg:#f0f4f0; --bg2:#ffffff; --surface:#ffffff; --surface2:#f5f9f5; --border:#d4e8d4; --text:#1a2e1a; --text2:#4a6a4a; --muted:#6b8f6b; }
+body.light .funil-col { background:#f0f0f5; }
 .theme-toggle { background:var(--surface2); border:1px solid var(--border); color:var(--text2); width:34px; height:34px; border-radius:8px; cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center; }
 .theme-toggle:hover { background:var(--primary); color:#fff; }
 .hist-item { display:flex; gap:10px; padding:10px 0; border-bottom:1px solid var(--border); }
@@ -3367,6 +3368,7 @@ function toggleTheme(){
 function initApp(){
   var savedTheme=localStorage.getItem('d7_theme');
   if(savedTheme==='light'){document.body.classList.add('light');var btn=document.getElementById('btn-theme');if(btn)btn.textContent='☀️';}
+  else{document.body.classList.remove('light');var btn=document.getElementById('btn-theme');if(btn)btn.textContent='🌙';}
   navigate('dashboard');
   loadConfig();
   renderDashboard();
