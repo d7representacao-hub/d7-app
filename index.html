@@ -1289,6 +1289,10 @@ WhatsApp: [Seu Telefone]</textarea>
         </select>
       </div>
       <div class="form-group">
+        <label class="form-label">Peso Unit. (kg)</label>
+        <input class="form-input" id="fp-peso_kg" placeholder="0,000" type="number" step="0.001" min="0">
+      </div>
+      <div class="form-group">
         <label class="form-label">Estoque Mínimo</label>
         <input class="form-input" id="fp-estoque" placeholder="0">
       </div>
@@ -1472,6 +1476,7 @@ WhatsApp: [Seu Telefone]</textarea>
     </div>
     <div class="pedido-total" style="display:none">
       <span class="pedido-total-label">Desconto: <span id="pedido-desconto-display">0%</span></span>
+      <span class="pedido-total-label">⚖️ Peso: <span id="pedido-peso-total">0,000 kg</span></span>
       <span class="pedido-total-label">Total:</span>
       <span class="pedido-total-value" id="pedido-total-value">R$ 0,00</span>
     </div>
@@ -2092,7 +2097,7 @@ function adicionarItemPedido(){
   if(!prod)return;
   var existing=itensPedido.find(function(i){return i.produtoId===prodId;});
   if(existing){existing.qtd+=qtd;existing.total=existing.qtd*existing.preco;}
-  else{itensPedido.push({produtoId:prodId,nome:prod.nome,unidade:prod.unidade||'UN',emb:prod.emb||'',preco:parseFloat(prod.preco||0),qtd:qtd,total:qtd*parseFloat(prod.preco||0)});}
+  else{itensPedido.push({produtoId:prodId,nome:prod.nome,unidade:prod.unidade||'UN',emb:prod.emb||'',preco:parseFloat(prod.preco||0),qtd:qtd,total:qtd*parseFloat(prod.preco||0),peso_kg:parseFloat(prod.peso_kg||0)});}
   renderItensPedido();
   document.getElementById('qtd-pedido').value=1;
 }
@@ -2101,11 +2106,12 @@ function renderItensPedido(){
   if(!itensPedido.length){
     body.innerHTML='<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px;">Nenhum item adicionado</div>';
     document.getElementById('pedido-desconto-display').textContent='0%';
-    document.getElementById('pedido-total-value').textContent='R$ 0,00';return;
+    document.getElementById('pedido-total-value').textContent='R$ 0,00';
+    document.getElementById('pedido-peso-total').textContent='0,000 kg';return;
   }
   body.innerHTML=itensPedido.map(function(it,idx){
     return '<div class="pedido-item-row">'
-      +'<div><strong style="font-size:13px;">'+esc(it.nome)+'</strong><br><small style="color:var(--text2,#888);font-size:11px;">'+esc(it.unidade)+' · R$ '+fmtNum(it.preco)+' · '+it.qtd+'x = '+fmtMoeda(it.total)+'</small></div>'
+      +'<div><strong style="font-size:13px;">'+esc(it.nome)+'</strong><br><small style="color:var(--text2,#888);font-size:11px;">'+esc(it.unidade)+' · R$ '+fmtNum(it.preco)+' · '+it.qtd+'x = '+fmtMoeda(it.total)+(it.peso_kg?' · ⚖️ '+it.peso_kg.toFixed(3)+'kg un / '+(it.qtd*it.peso_kg).toFixed(3)+'kg total':'')+'</small></div>'
       +'<button class="btn btn-ghost btn-sm" onclick="removeItemPedido('+idx+')" style="color:var(--danger);flex-shrink:0;" title="Remover">&#x1F5D1;</button>'
       +'</div>';
   }).join('');
@@ -2122,7 +2128,9 @@ function recalcularPedido(){
   var desc=parseFloat(document.getElementById('fp-desconto-pedido').value)||0;
   var sub=itensPedido.reduce(function(s,i){return s+i.total;},0);
   var total=sub*(1-desc/100);
+  var pesoTotal=itensPedido.reduce(function(s,i){return s+(i.peso_kg||0)*i.qtd;},0);
   document.getElementById('pedido-desconto-display').textContent=desc+'%';
+  document.getElementById('pedido-peso-total').textContent=pesoTotal.toFixed(3)+' kg';
   document.getElementById('pedido-total-value').textContent=fmtMoeda(total);
   previewPedido();
 }
@@ -2736,7 +2744,7 @@ function abrirModalProduto(id){
   sel.innerHTML='<option value="">Selecione o fornecedor...</option>';
   fornecedores.forEach(function(f){sel.innerHTML+='<option value="'+f.id+'">'+esc(f.nome)+'</option>';});
   sel.value=p.fornecedorId||'';
-  ['nome','codigo','categoria','unidade','estoque','custo','preco','margem','ean','ncm','info','descricao'].forEach(function(field){
+  ['nome','codigo','categoria','unidade','estoque','custo','preco','margem','ean','ncm','info','descricao','peso_kg'].forEach(function(field){
     var el=document.getElementById('fp-'+field);if(el)el.value=p[field]||'';
   });
   document.getElementById('fp-unidade').value=p.unidade||'UN';
@@ -2747,7 +2755,7 @@ function salvarProduto(){
   var fornId=document.getElementById('fp-fornecedor').value;
   if(!nome){toast('Nome é obrigatório','error');return;}
   if(!fornId){toast('Selecione um fornecedor','error');return;}
-  var obj={id:editProdId||uid(),fornecedorId:fornId,nome:nome,codigo:document.getElementById('fp-codigo').value,categoria:document.getElementById('fp-categoria').value,unidade:document.getElementById('fp-unidade').value,estoque:parseFloat(document.getElementById('fp-estoque').value)||0,custo:parseFloat(document.getElementById('fp-custo').value)||0,preco:parseFloat(document.getElementById('fp-preco').value)||0,margem:parseFloat(document.getElementById('fp-margem').value)||0,ean:document.getElementById('fp-ean').value,ncm:document.getElementById('fp-ncm').value,emb:document.getElementById('fp-emb').value,emb2:document.getElementById('fp-emb2').value,info:document.getElementById('fp-info').value,descricao:document.getElementById('fp-descricao').value};
+  var obj={id:editProdId||uid(),fornecedorId:fornId,nome:nome,codigo:document.getElementById('fp-codigo').value,categoria:document.getElementById('fp-categoria').value,unidade:document.getElementById('fp-unidade').value,estoque:parseFloat(document.getElementById('fp-estoque').value)||0,custo:parseFloat(document.getElementById('fp-custo').value)||0,preco:parseFloat(document.getElementById('fp-preco').value)||0,margem:parseFloat(document.getElementById('fp-margem').value)||0,ean:document.getElementById('fp-ean').value,ncm:document.getElementById('fp-ncm').value,emb:document.getElementById('fp-emb').value,emb2:document.getElementById('fp-emb2').value,info:document.getElementById('fp-info').value,descricao:document.getElementById('fp-descricao').value,peso_kg:parseFloat(document.getElementById('fp-peso_kg').value)||0};
   if(editProdId){var i=produtos.findIndex(function(p){return p.id===editProdId;});produtos[i]=obj;}else{produtos.push(obj);}
   saveP();fecharModal('modal-produto');renderCatalogo();agendarAutoSave();toast('Produto salvo!','success');
 }
