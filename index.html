@@ -3357,7 +3357,15 @@ function salvarMetas(){
   renderMetas();
   toast('Metas salvas!','success');
 }
+function toggleTheme(){
+  var isLight=document.body.classList.toggle('light');
+  localStorage.setItem('d7_theme',isLight?'light':'dark');
+  var btn=document.getElementById('btn-theme');
+  if(btn)btn.textContent=isLight?'☀️':'🌙';
+}
 function initApp(){
+  var savedTheme=localStorage.getItem('d7_theme');
+  if(savedTheme==='light'){document.body.classList.add('light');var btn=document.getElementById('btn-theme');if(btn)btn.textContent='☀️';}
   navigate('dashboard');
   loadConfig();
   renderDashboard();
