@@ -3554,5 +3554,46 @@ function salvarClienteRapido() {
   document.getElementById('modal-rapido-cliente').remove();
   alert('✅ Cliente "' + nome + '" cadastrado e selecionado!');
 }
+
+// === INJETAR BOTÃO CADASTRO RÁPIDO NO NOVO PEDIDO ===
+(function() {
+  function injetarBtnCadastroCliente() {
+    const sel = document.getElementById('fp-cliente-pedido');
+    if (!sel || document.getElementById('btn-cadastro-rapido')) return;
+    const btn = document.createElement('button');
+    btn.id = 'btn-cadastro-rapido';
+    btn.type = 'button';
+    btn.textContent = '+ Cadastrar Novo Cliente';
+    btn.style.cssText = 'margin-top:6px;width:100%;padding:7px 10px;background:none;border:1.5px dashed #D8D4F0;color:#7F77DD;border-radius:7px;cursor:pointer;font-size:12px;font-weight:600;transition:all .15s;display:block;';
+    btn.onmouseover = function(){ this.style.background='#7F77DD';this.style.color='#fff';this.style.borderColor='#7F77DD'; };
+    btn.onmouseout = function(){ this.style.background='none';this.style.color='#7F77DD';this.style.borderColor='#D8D4F0'; };
+    btn.onclick = function(){ if(typeof abrirModalRapidoCliente==='function') abrirModalRapidoCliente(); };
+    sel.parentElement.appendChild(btn);
+  }
+  // Watch for fp-cliente-pedido to appear in DOM
+  const observer = new MutationObserver(function(mutations) {
+    for(const m of mutations) {
+      if([...m.addedNodes].some(n => n.id==='modal-pedido' || (n.querySelector && n.querySelector('#fp-cliente-pedido')))) {
+        setTimeout(injetarBtnCadastroCliente, 100);
+      }
+    }
+    // Also try directly if select exists but button not yet added
+    injetarBtnCadastroCliente();
+  });
+  document.addEventListener('DOMContentLoaded', function() {
+    observer.observe(document.body, { childList: true, subtree: true });
+  });
+  // Patch acaoPrincipal after page load
+  window.addEventListener('load', function() {
+    if (typeof acaoPrincipal === 'function') {
+      const _origAcao = acaoPrincipal;
+      window.acaoPrincipal = function() {
+        const r = _origAcao.apply(this, arguments);
+        setTimeout(injetarBtnCadastroCliente, 150);
+        return r;
+      };
+    }
+  });
+})();
 </script></body>
 </html>
